@@ -31,6 +31,22 @@ void main() {
     );
   });
 
+  test('tagFromLatestLocation reads the GitHub release tag', () {
+    expect(
+      AppUpdateService.tagFromLatestLocation(
+        'https://github.com/galaxie44/coffre/releases/tag/v1.0.3',
+      ),
+      'v1.0.3',
+    );
+    expect(
+      AppUpdateService.tagFromLatestLocation(
+        '/galaxie44/coffre/releases/tag/v1.0.3',
+      ),
+      'v1.0.3',
+    );
+    expect(AppUpdateService.tagFromLatestLocation(null), isNull);
+  });
+
   test('parseLatest reads the Windows installer asset', () {
     const json = '''
 {

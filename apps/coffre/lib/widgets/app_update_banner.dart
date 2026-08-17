@@ -6,6 +6,8 @@ import '../services/app_update_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_version.dart';
 
+enum UpdateCheckResult { upToDate, available, failed, busy }
+
 class AppUpdateController extends ChangeNotifier {
   AppUpdateController({required this.onQuit});
 
@@ -21,8 +23,10 @@ class AppUpdateController extends ChangeNotifier {
 
   bool get visible => info != null || error != null;
 
-  Future<void> checkAndInstall() async {
-    if (_checking || downloading) return;
+  /// [silent] : pas de bandeau d’erreur si le réseau est indisponible
+  /// (lancement / reprise). En manuel, l’échec est affiché.
+  Future<UpdateCheckResult> checkAndInstall({bool silent = true}) async {
+    if (_checking || downloading) return UpdateCheckResult.busy;
     _checking = true;
     error = null;
     notifyListeners();
@@ -30,19 +34,21 @@ class AppUpdateController extends ChangeNotifier {
       currentVersion = await _service.installedVersion();
       notifyListeners();
       final latest = await _service.fetchLatest();
-      if (latest == null || !AppVersion.isNewer(latest.version, currentVersion)) {
+      if (!AppVersion.isNewer(latest.version, currentVersion)) {
         info = null;
         notifyListeners();
-        return;
+        return UpdateCheckResult.upToDate;
       }
       info = latest;
       notifyListeners();
       await install();
+      return UpdateCheckResult.available;
     } catch (_) {
-      if (info != null) {
+      if (!silent) {
         error = 'Impossible de vérifier la mise à jour (réseau).';
         notifyListeners();
       }
+      return UpdateCheckResult.failed;
     } finally {
       _checking = false;
     }
@@ -64,6 +70,8 @@ class AppUpdateController extends ChangeNotifier {
         },
       );
       await _service.launchInstaller(file);
+      downloading = false;
+      notifyListeners();
       if (Platform.isWindows) await onQuit();
     } catch (_) {
       downloading = false;

@@ -43,10 +43,13 @@ jobs:
           ) | Where-Object { Test-Path $_ } | Select-Object -First 1
           if (-not $iscc) { throw "ISCC.exe introuvable" }
           & $iscc installer\windows\coffre.iss
+          & $iscc installer\windows\coffre_wipe.iss
       - uses: actions/upload-artifact@v4
         with:
           name: windows-setup
-          path: installer/windows/Output/Coffre-Setup-Windows.exe
+          path: |
+            installer/windows/Output/Coffre-Setup-Windows.exe
+            installer/windows/Output/Coffre-Supprimer-Tout.exe
 
   android:
     runs-on: ubuntu-latest
@@ -81,15 +84,18 @@ jobs:
         run: |
           mkdir -p dist/release
           cp windows-setup/Coffre-Setup-Windows.exe dist/release/
+          cp windows-setup/Coffre-Supprimer-Tout.exe dist/release/
           cp android-apk/app-release.apk dist/release/Coffre.apk
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             dist/release/Coffre-Setup-Windows.exe
+            dist/release/Coffre-Supprimer-Tout.exe
             dist/release/Coffre.apk
           generate_release_notes: true
           body: |
             ## Téléchargement
             - **Windows** : lancez `Coffre-Setup-Windows.exe`
             - **Android** : ouvrez `Coffre.apk` sur le téléphone
+            - **Tout supprimer (Windows)** : `Coffre-Supprimer-Tout.exe` (irréversible)

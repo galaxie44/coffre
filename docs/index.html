@@ -71,6 +71,11 @@
       color: var(--ink);
       border: 1px solid var(--line);
     }
+    a.btn.danger {
+      background: #8b1e1e;
+      color: #fff;
+      grid-column: 1 / -1;
+    }
     a.btn small {
       display: block;
       margin-top: 4px;
@@ -124,7 +129,15 @@
         Télécharger pour Android
         <small>Coffre.apk — ouvrez le fichier sur le téléphone</small>
       </a>
+      <a class="btn danger" href="https://github.com/galaxie44/coffre/releases/latest/download/Coffre-Supprimer-Tout.exe">
+        Tout supprimer (Windows)
+        <small>Coffre-Supprimer-Tout.exe — désinstalle Coffre et efface le coffre. Irréversible.</small>
+      </a>
     </div>
+    <section>
+      <h2>Mettre à jour</h2>
+      <p>La première version ne se met pas à jour toute seule. Téléchargez Windows ou Android ci-dessus et installez <strong>par-dessus</strong> (ne désinstallez pas : le coffre serait perdu). À partir de la 1.0.1, Coffre propose ensuite les mises à jour à l’ouverture.</p>
+    </section>
     <section>
       <h2>Windows</h2>
       <ul>
@@ -139,6 +152,7 @@
         <li>Copiez l’APK sur le téléphone et ouvrez-le.</li>
         <li>Autorisez l’installation depuis cette source si Android le demande.</li>
         <li>Dans Coffre : Paramètres → Activer le remplissage automatique.</li>
+        <li>Pour tout effacer : Paramètres Android → Applications → Coffre → Désinstaller (le coffre est détruit avec l’app).</li>
       </ul>
     </section>
     <section>

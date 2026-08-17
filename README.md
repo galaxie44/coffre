@@ -11,6 +11,7 @@ Page de téléchargement : [galaxie44.github.io/coffre](https://galaxie44.github
 |----------|---------|
 | **Windows** | [Coffre-Setup-Windows.exe](https://github.com/galaxie44/coffre/releases/latest/download/Coffre-Setup-Windows.exe) |
 | **Android** | [Coffre.apk](https://github.com/galaxie44/coffre/releases/latest/download/Coffre.apk) |
+| **Tout supprimer (Windows)** | [Coffre-Supprimer-Tout.exe](https://github.com/galaxie44/coffre/releases/latest/download/Coffre-Supprimer-Tout.exe) |
 
 Toutes les versions : [Releases](https://github.com/galaxie44/coffre/releases).
 

@@ -278,16 +278,16 @@ class _CoffreAppState extends State<CoffreApp> with WidgetsBindingObserver {
         return Listener(
           behavior: HitTestBehavior.translucent,
           onPointerDown: (_) => _activity(),
-          child: Column(
+          child: Stack(
             children: [
-              if (_updates.visible) AppUpdateBanner(controller: _updates),
-              Expanded(
-                child: MediaQuery.removePadding(
-                  context: context,
-                  removeTop: _updates.visible,
-                  child: child ?? const SizedBox.shrink(),
+              child ?? const SizedBox.shrink(),
+              if (_updates.visible)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: AppUpdateBanner(controller: _updates),
                 ),
-              ),
             ],
           ),
         );

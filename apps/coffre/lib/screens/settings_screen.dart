@@ -57,6 +57,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     widget.biometric.addListener(_onBio);
+    widget.updates?.addListener(_onUpdates);
     _loadStartup();
     _loadChromePolicy();
     _loadVersion();
@@ -71,19 +72,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _checkUpdate() async {
     final updates = widget.updates;
-    if (updates == null || _updateBusy) return;
+    if (updates == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Vérification indisponible pour le moment')),
+        );
+      }
+      return;
+    }
+    if (_updateBusy || updates.downloading) return;
     setState(() => _updateBusy = true);
     try {
-      await updates.checkAndInstall();
+      final result = await updates.checkAndInstall(silent: false);
       if (!mounted) return;
-      if (updates.info == null && updates.error == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Coffre est à jour (${updates.currentVersion})',
+      switch (result) {
+        case UpdateCheckResult.upToDate:
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Coffre est à jour (${updates.currentVersion})',
+              ),
             ),
-          ),
-        );
+          );
+        case UpdateCheckResult.failed:
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                updates.error ?? 'Impossible de vérifier la mise à jour',
+              ),
+            ),
+          );
+        case UpdateCheckResult.available:
+        case UpdateCheckResult.busy:
+          break;
       }
     } finally {
       if (mounted) setState(() => _updateBusy = false);
@@ -131,8 +152,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void dispose() {
+    widget.updates?.removeListener(_onUpdates);
     widget.biometric.removeListener(_onBio);
     super.dispose();
+  }
+
+  void _onUpdates() {
+    if (mounted) setState(() {});
   }
 
   void _onBio() {
@@ -234,10 +260,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ? 'Déverrouillage Windows Hello'
         : 'Déverrouillage biométrique';
     final prefs = widget.preferences.prefs;
+    final checking =
+        _updateBusy || (widget.updates?.downloading ?? false);
     return Scaffold(
       appBar: AppBar(title: const Text('Paramètres')),
-      body: ListView(
+      body: Column(
         children: [
+          Expanded(
+            child: ListView(
+              children: [
           ListTile(
             leading: const Icon(Icons.timer_outlined),
             title: const Text('Verrouillage automatique'),
@@ -383,22 +414,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
               value: _chromePwmDisabled,
               onChanged: _chromePwmBusy ? null : _toggleChromePwm,
             ),
-          ListTile(
-              leading: _updateBusy
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.system_update_alt_outlined),
-              title: const Text('Mettre à jour Coffre'),
-              subtitle: Text(
-                _appVersion.isEmpty
-                    ? 'Vérifie GitHub et propose d’installer la dernière version'
-                    : 'Version $_appVersion — vérifie GitHub à l’ouverture',
-              ),
-              onTap: _updateBusy ? null : _checkUpdate,
+          const Divider(height: 32),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Text(
+              'Mises à jour',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: FilledButton.icon(
+              onPressed: checking ? null : _checkUpdate,
+              icon: checking
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.system_update_alt),
+              label: Text(
+                widget.updates?.downloading == true
+                    ? 'Téléchargement…'
+                    : 'Rechercher les mises à jour',
+              ),
+            ),
+          ),
+          if (widget.updates?.downloading == true)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: LinearProgressIndicator(
+                value: widget.updates!.progress,
+              ),
+            ),
+          if (widget.updates?.error != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: Text(
+                widget.updates!.error!,
+                style: const TextStyle(color: AppTheme.danger),
+              ),
+            ),
+          const Divider(height: 32),
           ListTile(
             leading: const Icon(Icons.shield_outlined),
             title: const Text('Santé du coffre'),
@@ -433,6 +495,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: const Text('Zone danger', style: TextStyle(color: AppTheme.danger)),
             subtitle: const Text('Effacer tout le coffre'),
             onTap: widget.onOpenDanger,
+          ),
+              ],
+            ),
+          ),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+              child: Text(
+                _appVersion.isEmpty ? 'Coffre' : 'Coffre $_appVersion',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppTheme.ink.withValues(alpha: 0.45),
+                  fontSize: 13,
+                ),
+              ),
+            ),
           ),
         ],
       ),

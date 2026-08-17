@@ -31,6 +31,8 @@ if not exist %ISCC% (
 )
 %ISCC% "%ROOT%\installer\windows\coffre.iss"
 if errorlevel 1 exit /b 1
+%ISCC% "%ROOT%\installer\windows\coffre_wipe.iss"
+if errorlevel 1 exit /b 1
 
 echo === Build APK Android ===
 set ANDROID_HOME=%LOCALAPPDATA%\Android\Sdk
@@ -44,6 +46,7 @@ copy /Y "%ROOT%\apps\coffre\build\app\outputs\flutter-apk\app-release.apk" "%ROO
 
 if not exist "%ROOT%\dist\release" mkdir "%ROOT%\dist\release"
 copy /Y "%ROOT%\installer\windows\Output\Coffre-Setup-Windows.exe" "%ROOT%\dist\release\" >nul
+copy /Y "%ROOT%\installer\windows\Output\Coffre-Supprimer-Tout.exe" "%ROOT%\dist\release\" >nul
 copy /Y "%ROOT%\dist\android\Coffre.apk" "%ROOT%\dist\release\Coffre.apk" >nul
 
 if not exist "%~dp0..\dist\release" mkdir "%~dp0..\dist\release"
@@ -52,5 +55,6 @@ xcopy /Y "%ROOT%\dist\release\*" "%~dp0..\dist\release\" >nul
 echo.
 echo OK
 echo  Windows : %ROOT%\dist\release\Coffre-Setup-Windows.exe
+echo  Wipe    : %ROOT%\dist\release\Coffre-Supprimer-Tout.exe
 echo  Android : %ROOT%\dist\release\Coffre.apk
 endlocal

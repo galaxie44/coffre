@@ -50,7 +50,33 @@ class AppUpdateService {
     return AppVersion.normalize(info.version);
   }
 
-  Future<AppUpdateInfo?> fetchLatest() async {
+  static final _tagInPath = RegExp(r'/releases/tag/([^/?#]+)');
+
+  static String? tagFromLatestLocation(String? location) {
+    if (location == null || location.isEmpty) return null;
+    final uri = Uri.tryParse(location);
+    final path = uri?.path ?? location;
+    return _tagInPath.firstMatch(path)?.group(1);
+  }
+
+  Future<AppUpdateInfo> fetchLatest() async {
+    Object? lastError;
+    try {
+      final fromApi = await _fetchFromApi();
+      if (fromApi != null) return fromApi;
+    } catch (e) {
+      lastError = e;
+    }
+    try {
+      final fromPage = await _fetchFromRedirect();
+      if (fromPage != null) return fromPage;
+    } catch (e) {
+      lastError = e;
+    }
+    throw lastError ?? const SocketException('Impossible de joindre GitHub');
+  }
+
+  Future<AppUpdateInfo?> _fetchFromApi() async {
     final current = await installedVersion();
     final response = await _client
         .get(
@@ -62,8 +88,41 @@ class AppUpdateService {
           },
         )
         .timeout(const Duration(seconds: 12));
-    if (response.statusCode != 200) return null;
+    if (response.statusCode != 200) {
+      throw HttpException('GitHub ${response.statusCode}');
+    }
     return parseLatest(response.body, assetName: platformAsset);
+  }
+
+  Future<AppUpdateInfo?> _fetchFromRedirect() async {
+    final current = await installedVersion();
+    final request = http.Request(
+      'GET',
+      Uri.https('github.com', '/$owner/$repo/releases/latest'),
+    );
+    request.followRedirects = false;
+    request.headers['User-Agent'] = 'Coffre/$current';
+    request.headers['Accept'] = 'text/html';
+    final response =
+        await _client.send(request).timeout(const Duration(seconds: 12));
+    await response.stream.drain<void>();
+    final tag = tagFromLatestLocation(response.headers['location']) ??
+        tagFromLatestLocation(response.request?.url.toString());
+    if (tag == null || tag.isEmpty) return null;
+    final version = AppVersion.normalize(tag);
+    final tagForUrl =
+        tag.startsWith('v') || tag.startsWith('V') ? tag : 'v$version';
+    final downloadUrl = Uri.https(
+      'github.com',
+      '/$owner/$repo/releases/download/$tagForUrl/$platformAsset',
+    );
+    if (!isTrustedUpdateUrl(downloadUrl)) return null;
+    return AppUpdateInfo(
+      version: version,
+      title: 'Coffre $version',
+      downloadUrl: downloadUrl,
+      fileName: platformAsset,
+    );
   }
 
   static AppUpdateInfo? parseLatest(
