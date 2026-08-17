@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Coffre</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --teal: #0a6b6b;
+        --ink: #1a2426;
+        --mist: #e8eef2;
+      }
+      body {
+        margin: 0;
+        font: 14px/1.4 Outfit, Segoe UI, sans-serif;
+        color: var(--ink);
+        background: linear-gradient(160deg, #e8eef2, #d5e4e4);
+        min-width: 280px;
+      }
+      header {
+        padding: 12px 14px 8px;
+        font-weight: 700;
+        color: var(--teal);
+      }
+      #status {
+        padding: 0 14px 8px;
+        font-size: 12px;
+        opacity: 0.8;
+      }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0 8px 12px;
+      }
+      li button {
+        width: 100%;
+        text-align: left;
+        border: 1px solid rgba(26, 36, 38, 0.1);
+        background: #f7fafb;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 6px;
+        cursor: pointer;
+      }
+      li button:hover {
+        border-color: var(--teal);
+      }
+      .title {
+        font-weight: 600;
+      }
+      .sub {
+        font-size: 12px;
+        opacity: 0.7;
+      }
+    </style>
+  </head>
+  <body>
+    <header>Coffre</header>
+    <div id="status">Chargement…</div>
+    <ul id="list"></ul>
+    <script src="popup.js"></script>
+  </body>
+</html>

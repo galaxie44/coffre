@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Coffre",
+  "version": "1.0.6",
+  "description": "Remplissage automatique des formulaires via l'application Coffre (locale).",
+  "permissions": [
+    "activeTab",
+    "nativeMessaging",
+    "privacy",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Coffre",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAomveBaItC3txefdTKdPbzzAH0LsefHDQEypXDEErG74M1RqLUFqREyGcyL59Wwvh555vwBVXKs6adsrJkFDqHsZcIZJ8FTjJddvoahwUVoOBE7qUS7khpNYQTYNbAleQWPKnq98ZYz8iLTKixAT94cFIr8jDPQtrqd/pVVw1qsam0rP4jO/hLoRc+rySIkj5elCeZftH5+sRjKDmpw7H1hbDJ4019NV0E9h+fRnaeTFl3TFNmkvir59NrummnNogdbOuspAgNhC87GEjLngg7f53lR5cK5YkT4ZCCuFfYBTRD+WUTxgq+rEFXEVgyDBkPE/R2zBrgZPNw02n4nortwIDAQAB"
+}

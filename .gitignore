@@ -1,0 +1,40 @@
+# Flutter / build
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/ephemeral/
+**/.packages
+*.iml
+.idea/
+.vscode/
+.gradle/
+**/local.properties
+**/.cxx/
+
+# Native messaging generated
+extension/native_host/run_host.bat
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Secrets / local vaults (never commit)
+**/vault.enc
+**/bridge.json
+**/autofill_session.json
+**/autofill_session.enc
+**/pending_autofill_save.json
+**/chrome_import.json
+**/*.pem
+**/*.keystore
+**/*.jks
+.env
+.env.*
+
+# Binaries built locally — published via GitHub Releases
+dist/
+*.apk
+installer/windows/Output/
+installer/payload/

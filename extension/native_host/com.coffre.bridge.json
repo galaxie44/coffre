@@ -1,0 +1,9 @@
+{
+  "name": "com.coffre.bridge",
+  "description": "Coffre Native Messaging Host",
+  "path": "C:\\Users\\edoua\\AppData\\Local\\Coffre\\native_host\\run_host.bat",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://nkomcbokhoemfpdlbjnbhjlhfofmcodl/"
+  ]
+}

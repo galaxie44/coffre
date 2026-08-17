@@ -1,0 +1,41 @@
+name: coffre
+description: Gestionnaire de mots de passe local chiffré (Android + Windows).
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  cryptography: ^2.7.0
+  path_provider: ^2.1.5
+  path: ^1.9.1
+  uuid: ^4.5.1
+  google_fonts: ^6.2.1
+  window_manager: ^0.4.3
+  tray_manager: ^0.2.4
+  launch_at_startup: ^0.3.1
+  shelf: ^1.4.2
+  shelf_router: ^1.1.4
+  local_auth: ^2.3.0
+  win32: ^5.15.0
+  ffi: ^2.2.0
+  otp: ^3.1.4
+  http: ^1.2.2
+  crypto: ^3.0.6
+  sqlite3: ^2.9.4
+  sqlite3_flutter_libs: ^0.5.39
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon/coffre.png
+    - assets/icon/coffre.ico
