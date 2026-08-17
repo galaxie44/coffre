@@ -217,6 +217,7 @@ class _CoffreAppState extends State<CoffreApp> with WidgetsBindingObserver {
         onLock: _lock,
         onActivity: _activity,
         windows: _windows,
+        onQuitForUpdate: _quit,
       );
     }
     return UnlockScreen(vault: _vault, biometric: _biometric);

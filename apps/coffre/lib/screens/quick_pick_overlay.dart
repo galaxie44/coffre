@@ -8,9 +8,7 @@ import '../services/sequential_clipboard_service.dart';
 import '../services/vault_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/entry_display.dart';
-import '../utils/entry_filters.dart';
 import '../utils/entry_groups.dart';
-import '../widgets/entry_filter_bar.dart';
 import '../widgets/entry_group_card.dart';
 
 class QuickPickOverlay extends StatefulWidget {
@@ -41,7 +39,6 @@ class _QuickPickOverlayState extends State<QuickPickOverlay>
   final _focus = FocusNode();
   bool _busy = false;
   List<VaultEntry> _cachedEntries = const [];
-  Set<String> _selectedFilters = {};
 
   @override
   bool get wantKeepAlive => true;
@@ -58,7 +55,6 @@ class _QuickPickOverlayState extends State<QuickPickOverlay>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.targetWindow.hwnd != widget.targetWindow.hwnd) {
       _search.clear();
-      _selectedFilters = {};
       _rebuildCache();
     }
     if (widget.isActive && !oldWidget.isActive) {
@@ -117,7 +113,7 @@ class _QuickPickOverlayState extends State<QuickPickOverlay>
     return group.primary;
   }
 
-  List<VaultEntry> _entries(List<EntryFilter> filters, Set<String> selected) {
+  List<VaultEntry> _entries() {
     var list = _cachedEntries;
     final q = _search.text.trim();
     if (q.isNotEmpty) {
@@ -128,7 +124,7 @@ class _QuickPickOverlayState extends State<QuickPickOverlay>
             EntryDisplay.subtitle(e).toLowerCase().contains(lower);
       }).toList();
     }
-    return EntryFilters.apply(list, filters, selected);
+    return list;
   }
 
   Future<void> _pickEntry(VaultEntry entry) async {
@@ -179,14 +175,7 @@ class _QuickPickOverlayState extends State<QuickPickOverlay>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final filters = EntryFilters.available(_cachedEntries);
-    final selected = EntryFilters.prune(_selectedFilters, filters);
-    if (selected.length != _selectedFilters.length) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() => _selectedFilters = selected);
-      });
-    }
-    final entries = _entries(filters, selected);
+    final entries = _entries();
     final groups = EntryGroups.from(entries);
     final target = widget.targetWindow;
     final contextLabel = EntryDisplay.friendlyWindowContext(
@@ -242,12 +231,6 @@ class _QuickPickOverlayState extends State<QuickPickOverlay>
               ),
               onChanged: (_) => setState(() {}),
             ),
-          ),
-          EntryFilterBar(
-            compact: true,
-            filters: filters,
-            selectedIds: selected,
-            onChanged: (next) => setState(() => _selectedFilters = next),
           ),
           Expanded(
             child: entries.isEmpty

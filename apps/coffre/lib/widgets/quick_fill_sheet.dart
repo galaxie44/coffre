@@ -5,9 +5,7 @@ import '../services/sequential_clipboard_service.dart';
 import '../services/vault_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/entry_display.dart';
-import '../utils/entry_filters.dart';
 import '../utils/entry_groups.dart';
-import 'entry_filter_bar.dart';
 import 'entry_group_card.dart';
 
 /// Équivalent tactile de Ctrl+Shift+C : feuille du bas, au-dessus du clavier.
@@ -43,7 +41,6 @@ class _QuickFillBody extends StatefulWidget {
 
 class _QuickFillBodyState extends State<_QuickFillBody> {
   final _search = TextEditingController();
-  Set<String> _selectedFilters = {};
 
   @override
   void dispose() {
@@ -75,10 +72,7 @@ class _QuickFillBodyState extends State<_QuickFillBody> {
             EntryDisplay.subtitle(e).toLowerCase().contains(q);
       }).toList();
     }
-    final filters = EntryFilters.available(widget.vault.entries);
-    final selected = EntryFilters.prune(_selectedFilters, filters);
-    final items = EntryFilters.apply(list, filters, selected);
-    final groups = EntryGroups.from(items);
+    final groups = EntryGroups.from(list);
 
     return SizedBox(
       height: MediaQuery.sizeOf(context).height * 0.78,
@@ -108,14 +102,8 @@ class _QuickFillBodyState extends State<_QuickFillBody> {
               onChanged: (_) => setState(() {}),
             ),
           ),
-          EntryFilterBar(
-            compact: true,
-            filters: filters,
-            selectedIds: selected,
-            onChanged: (next) => setState(() => _selectedFilters = next),
-          ),
           Expanded(
-            child: items.isEmpty
+            child: list.isEmpty
                 ? const Center(child: Text('Aucun compte'))
                 : ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),

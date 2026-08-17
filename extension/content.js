@@ -41,12 +41,94 @@ function domainFromUrl(url) {
   }
 }
 
-function fieldMeta(el) {
-  if (!(el instanceof HTMLInputElement) && !(el instanceof HTMLTextAreaElement)) return null;
+function fieldHint(el) {
+  let labelled = "";
+  const labelledBy = el.getAttribute("aria-labelledby") || "";
+  if (labelledBy) {
+    labelled = labelledBy
+      .split(/\s+/)
+      .map((id) => document.getElementById(id)?.textContent || "")
+      .join(" ");
+  }
+  let labelText = "";
+  if (el.id) {
+    try {
+      const lab = document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
+      if (lab) labelText = lab.textContent || "";
+    } catch (_) {}
+  }
+  const wrap = el.closest("label");
+  if (wrap) labelText += " " + (wrap.textContent || "");
+  return `${el.name || ""} ${el.id || ""} ${el.placeholder || ""} ${el.className || ""} ${
+    el.getAttribute("aria-label") || ""
+  } ${labelled} ${labelText}`.toLowerCase();
+}
+
+function isInCodeInputGroup(el) {
+  const parent = el.closest("form, fieldset, div, span") || el.parentElement;
+  if (!parent) return false;
+  const short = Array.from(parent.querySelectorAll("input")).filter((i) => {
+    if (i.disabled || i.type === "hidden") return false;
+    return i.maxLength === 1 || i.maxLength === 2;
+  });
+  return short.length >= 4;
+}
+
+function isVerificationPage() {
+  try {
+    const p = (location.pathname + location.search).toLowerCase();
+    return p.includes("/login/device") || /\/challenge\/(totp|sms|iap)/.test(p);
+  } catch (_) {
+    return false;
+  }
+}
+
+/** Codes 2FA / Authenticator / device login : jamais le menu Coffre. */
+function isOneTimeCodeField(el) {
+  if (!(el instanceof HTMLInputElement) && !(el instanceof HTMLTextAreaElement)) return false;
+  if (el.dataset.coffre === "1") return false;
+  if (isVerificationPage()) return true;
+
   const type = (el.type || "").toLowerCase();
   const ac = (el.getAttribute("autocomplete") || "").toLowerCase();
-  const hint = `${el.name} ${el.id} ${el.placeholder} ${el.getAttribute("aria-label") || ""} ${el.getAttribute("aria-labelledby") || ""}`.toLowerCase();
-  if (type === "password" || ac.includes("password")) return FIELD.PASSWORD;
+  const inputMode = (el.getAttribute("inputmode") || "").toLowerCase();
+  const hint = fieldHint(el);
+  const maxLength = el.maxLength;
+  const pattern = el.getAttribute("pattern") || "";
+
+  if (
+    ac.includes("one-time-code") ||
+    ac.includes("one_time_code") ||
+    ac.includes("otp") ||
+    ac.includes("totp")
+  ) {
+    return true;
+  }
+  if (
+    /otp|totp|hotp|2fa|mfa|two.?factor|authenticator|verification.?code|verify.?code|sms.?code|email.?code|one.?time|user.?code|device.?code|auth.?code|security.?code|confirmation.?code|ga-?code|backup.?code/.test(
+      hint
+    )
+  ) {
+    return true;
+  }
+  if (maxLength === 1) return true;
+  if (isInCodeInputGroup(el)) return true;
+  if (pattern === "\\d" || pattern === "[0-9]" || pattern === "[0-9]{1}") return true;
+  const numeric =
+    inputMode === "numeric" || inputMode === "decimal" || type === "tel" || type === "number";
+  if (numeric && maxLength >= 4 && maxLength <= 8) return true;
+  return false;
+}
+
+function fieldMeta(el) {
+  if (!(el instanceof HTMLInputElement) && !(el instanceof HTMLTextAreaElement)) return null;
+  if (isOneTimeCodeField(el)) return null;
+  const type = (el.type || "").toLowerCase();
+  const ac = (el.getAttribute("autocomplete") || "").toLowerCase();
+  const hint = fieldHint(el);
+  if (type === "password" || (ac.includes("password") && !ac.includes("one-time"))) {
+    return FIELD.PASSWORD;
+  }
   if (
     type === "email" ||
     ac.includes("email") ||
@@ -55,8 +137,17 @@ function fieldMeta(el) {
   ) {
     return FIELD.EMAIL;
   }
-  if (type === "text" || type === "tel" || type === "url" || !type) return FIELD.USERNAME;
+  if ((type === "text" || type === "tel" || type === "url" || !type) && looksLikeLoginField(el, hint)) {
+    return FIELD.USERNAME;
+  }
   return null;
+}
+
+function looksLikeLoginField(el, hint) {
+  if (/email|user|login|identifiant|account|pseudo/.test(hint)) return true;
+  const form = el.form || el.closest("form");
+  if (form && form.querySelector('input[type="password"]')) return true;
+  return false;
 }
 
 function isUsable(el) {
@@ -122,6 +213,7 @@ function findUsernameField() {
       (i) =>
         i !== password &&
         isUsable(i) &&
+        !isOneTimeCodeField(i) &&
         (i.type === "text" ||
           i.type === "email" ||
           i.type === "tel" ||
@@ -399,6 +491,10 @@ async function showForField(field, kind) {
 function onPointerDown(event) {
   const target = event.target;
   if (!(target instanceof HTMLInputElement)) return;
+  if (isOneTimeCodeField(target)) {
+    removePanel();
+    return;
+  }
   const kind = fieldMeta(target);
   if (!kind) return;
   shieldField(target);
@@ -417,7 +513,12 @@ document.addEventListener("pointerdown", onPointerDown, true);
 document.addEventListener(
   "focusin",
   (e) => {
-    if (e.target instanceof HTMLInputElement && fieldMeta(e.target)) {
+    if (!(e.target instanceof HTMLInputElement)) return;
+    if (isOneTimeCodeField(e.target)) {
+      removePanel();
+      return;
+    }
+    if (fieldMeta(e.target)) {
       shieldField(e.target);
       e.target.setAttribute("readonly", "readonly");
       const kind = fieldMeta(e.target);

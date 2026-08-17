@@ -362,37 +362,72 @@ class CoffreAutofillService : AutofillService() {
         return walk(structure.getWindowNodeAt(0).rootViewNode)
     }
 
+    private fun isOtpField(node: AssistStructure.ViewNode, hints: List<String>): Boolean {
+        val blob = buildString {
+            append(hints.joinToString(" "))
+            append(' ')
+            append(node.idEntry ?: "")
+            append(' ')
+            append(node.hint ?: "")
+            append(' ')
+            append(node.contentDescription?.toString() ?: "")
+        }.lowercase()
+        if (
+            blob.contains("otp") ||
+            blob.contains("totp") ||
+            blob.contains("smsotp") ||
+            blob.contains("one-time") ||
+            blob.contains("onetime") ||
+            blob.contains("2fa") ||
+            blob.contains("authenticator") ||
+            blob.contains("verificationcode") ||
+            blob.contains("user_code") ||
+            blob.contains("usercode")
+        ) {
+            return true
+        }
+        val maxLen = node.maxTextLength
+        if (maxLen == 1) return true
+        val inputType = node.inputType
+        val isNumber =
+            (inputType and android.text.InputType.TYPE_MASK_CLASS) == android.text.InputType.TYPE_CLASS_NUMBER ||
+                (inputType and android.text.InputType.TYPE_MASK_CLASS) == android.text.InputType.TYPE_CLASS_PHONE
+        return isNumber && maxLen in 4..8
+    }
+
     private fun parseNode(node: AssistStructure.ViewNode, out: MutableList<ParsedField>) {
         val id = node.autofillId
         if (id != null) {
             val hints = (node.autofillHints ?: emptyArray()).map { it.lowercase() }
-            val className = node.className?.lowercase() ?: ""
-            val inputType = node.inputType
-            val text = node.text?.toString()
-                ?: node.autofillValue?.takeIf { it.isText }?.textValue?.toString()
-            val isPassword = hints.any { it.contains("password") } ||
-                className.contains("password") ||
-                (inputType and android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0 ||
-                (inputType and android.text.InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD) != 0 ||
-                (inputType and android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD) != 0
-            val nameHints = hints.any {
-                it.contains("given-name") || it.contains("family-name") || it.contains("person-name")
-            }
-            val isUsername = !nameHints && (
-                hints.any {
-                    it.contains("username") || it.contains("email") || it.contains("login")
-                } || (inputType and android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS) != 0
-                    || (inputType and android.text.InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS) != 0
-            )
-            if (isPassword || isUsername) {
-                out.add(
-                    ParsedField(
-                        id = id,
-                        isUsername = isUsername && !isPassword,
-                        isPassword = isPassword,
-                        text = text,
-                    ),
+            if (!isOtpField(node, hints)) {
+                val className = node.className?.lowercase() ?: ""
+                val inputType = node.inputType
+                val text = node.text?.toString()
+                    ?: node.autofillValue?.takeIf { it.isText }?.textValue?.toString()
+                val isPassword = hints.any { it.contains("password") } ||
+                    className.contains("password") ||
+                    (inputType and android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0 ||
+                    (inputType and android.text.InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD) != 0 ||
+                    (inputType and android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD) != 0
+                val nameHints = hints.any {
+                    it.contains("given-name") || it.contains("family-name") || it.contains("person-name")
+                }
+                val isUsername = !nameHints && (
+                    hints.any {
+                        it.contains("username") || it.contains("email") || it.contains("login")
+                    } || (inputType and android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS) != 0
+                        || (inputType and android.text.InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS) != 0
                 )
+                if (isPassword || isUsername) {
+                    out.add(
+                        ParsedField(
+                            id = id,
+                            isUsername = isUsername && !isPassword,
+                            isPassword = isPassword,
+                            text = text,
+                        ),
+                    )
+                }
             }
         }
         for (i in 0 until node.childCount) {

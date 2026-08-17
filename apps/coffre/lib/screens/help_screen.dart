@@ -49,12 +49,7 @@ class HelpScreen extends StatelessWidget {
             const _HelpSection(
               title: 'Accès rapide dans Coffre',
               body:
-                  'Icône éclair en haut de l’accueil. Recherchez, cochez un filtre si le même e-mail apparaît plusieurs fois, puis Utiliser. L’identifiant est copié. Collez-le dans l’autre app, revenez (ou restez) et touchez « Mot de passe » sur le bandeau teal. Appui long sur une ligne de la liste = même action. Le menu ⋮ copie identifiant ou mot de passe seul.',
-            ),
-            const _HelpSection(
-              title: 'Filtres',
-              body:
-                  'Si un identifiant, un site ou un domaine e-mail apparaît au moins deux fois, le bouton Filtres s’affiche. Cochez les cases dans la feuille du bas ; les filtres actifs restent visibles sous la recherche.',
+                  'Icône éclair en haut de l’accueil. Recherchez un compte, puis Utiliser. L’identifiant est copié. Collez-le dans l’autre app, revenez (ou restez) et touchez « Mot de passe » sur le bandeau teal. Appui long sur une ligne de la liste = même action. Le menu ⋮ copie identifiant ou mot de passe seul.',
             ),
             const _HelpSection(
               title: 'Importer Chrome',
@@ -72,6 +67,11 @@ class HelpScreen extends StatelessWidget {
               title: 'Importer Chrome',
               body:
                   'Paramètres → Importer maintenant depuis Chrome. Optionnel : « Importer Chrome à l’ouverture » pour ajouter uniquement les nouveaux (doublons ignorés). Fermez Chrome si la lecture échoue.',
+            ),
+            const _HelpSection(
+              title: 'Mises à jour',
+              body:
+                  'À l’ouverture, Coffre consulte les Releases GitHub du projet. Si une version plus récente existe, une fenêtre propose de l’installer. Le coffre chiffré sur le PC n’est pas modifié. Paramètres → Mettre à jour Coffre relance la vérification.',
             ),
             const _HelpSection(
               title: 'Remplissage navigateur (Windows)',

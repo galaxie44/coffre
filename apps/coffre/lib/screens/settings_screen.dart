@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../services/app_update_service.dart';
 import '../services/biometric_service.dart';
 import '../services/chrome_login_import_service.dart';
 import '../services/chrome_policy_service.dart';
@@ -11,6 +12,7 @@ import '../services/preferences_service.dart';
 import '../services/vault_service.dart';
 import '../services/windows_desktop_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_update_prompt.dart';
 import 'help_screen.dart';
 import 'import_screen.dart';
 import 'security_screen.dart';
@@ -24,6 +26,7 @@ class SettingsScreen extends StatefulWidget {
     required this.onLock,
     required this.onOpenDanger,
     this.windows,
+    this.onQuitForUpdate,
   });
 
   final VaultService vault;
@@ -32,6 +35,7 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback onLock;
   final VoidCallback onOpenDanger;
   final WindowsDesktopService? windows;
+  final Future<void> Function()? onQuitForUpdate;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -43,6 +47,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _chromePwmDisabled = false;
   bool _chromePwmBusy = false;
   bool _chromeImportBusy = false;
+  bool _updateBusy = false;
+  String _appVersion = '';
   final _chromePolicy = ChromePolicyService();
   final _chromeImport = ChromeLoginImportService();
   static const _autofillChannel = MethodChannel('com.coffre/autofill');
@@ -53,6 +59,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
     widget.biometric.addListener(_onBio);
     _loadStartup();
     _loadChromePolicy();
+    _loadVersion();
+  }
+
+  Future<void> _loadVersion() async {
+    try {
+      final version = await AppUpdateService().installedVersion();
+      if (mounted) setState(() => _appVersion = version);
+    } catch (_) {}
+  }
+
+  Future<void> _checkUpdate() async {
+    final quit = widget.onQuitForUpdate;
+    if (!Platform.isWindows || quit == null || _updateBusy) return;
+    setState(() => _updateBusy = true);
+    try {
+      await AppUpdatePrompt.check(
+        context: context,
+        preferences: widget.preferences,
+        onQuit: quit,
+        manual: true,
+      );
+    } finally {
+      if (mounted) setState(() => _updateBusy = false);
+    }
   }
 
   Future<void> _loadChromePolicy() async {
@@ -270,7 +300,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               leading: const Icon(Icons.flash_on_outlined),
               title: const Text('Accès rapide'),
               subtitle: const Text(
-                'Icône éclair en haut de l’accueil : recherche, filtres, puis Utiliser (identifiant puis mot de passe).',
+                'Icône éclair en haut de l’accueil : recherche, puis Utiliser (identifiant puis mot de passe).',
               ),
             ),
             ListTile(
@@ -347,6 +377,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               value: _chromePwmDisabled,
               onChanged: _chromePwmBusy ? null : _toggleChromePwm,
+            ),
+          if (Platform.isWindows)
+            ListTile(
+              leading: _updateBusy
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.system_update_alt_outlined),
+              title: const Text('Mettre à jour Coffre'),
+              subtitle: Text(
+                _appVersion.isEmpty
+                    ? 'Vérifie GitHub et propose d’installer la dernière version'
+                    : 'Version $_appVersion — vérifie GitHub à l’ouverture',
+              ),
+              onTap: _updateBusy ? null : _checkUpdate,
             ),
           ListTile(
             leading: const Icon(Icons.shield_outlined),

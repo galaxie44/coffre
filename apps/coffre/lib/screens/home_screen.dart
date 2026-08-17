@@ -14,9 +14,8 @@ import '../services/vault_service.dart';
 import '../services/windows_desktop_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/credential_capture.dart';
-import '../utils/entry_filters.dart';
 import '../utils/entry_groups.dart';
-import '../widgets/entry_filter_bar.dart';
+import '../widgets/app_update_prompt.dart';
 import '../widgets/entry_group_card.dart';
 import '../widgets/quick_fill_sheet.dart';
 import '../widgets/sequential_copy_banner.dart';
@@ -37,6 +36,7 @@ class HomeScreen extends StatefulWidget {
     required this.onLock,
     required this.onActivity,
     this.windows,
+    this.onQuitForUpdate,
   });
 
   final VaultService vault;
@@ -47,6 +47,7 @@ class HomeScreen extends StatefulWidget {
   final VoidCallback onLock;
   final VoidCallback onActivity;
   final WindowsDesktopService? windows;
+  final Future<void> Function()? onQuitForUpdate;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -54,7 +55,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final _search = TextEditingController();
-  Set<String> _selectedFilters = {};
   bool _handlingPendingSave = false;
 
   @override
@@ -67,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _checkChromeImport();
       _autoImportChromeIfEnabled();
       _normalizeTitlesOnce();
+      _checkAppUpdate();
     });
   }
 
@@ -93,6 +94,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         );
       }
     } catch (_) {}
+  }
+
+  Future<void> _checkAppUpdate() async {
+    if (!Platform.isWindows) return;
+    final quit = widget.onQuitForUpdate;
+    if (quit == null) return;
+    await AppUpdatePrompt.check(
+      context: context,
+      preferences: widget.preferences,
+      onQuit: quit,
+    );
   }
 
   Future<void> _normalizeTitlesOnce() async {
@@ -235,6 +247,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           biometric: widget.biometric,
           preferences: widget.preferences,
           windows: widget.windows,
+          onQuitForUpdate: widget.onQuitForUpdate,
           onLock: widget.onLock,
           onOpenDanger: () {
             Navigator.of(context).push(
@@ -311,15 +324,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final searched = widget.vault.search(_search.text);
-    final filters = EntryFilters.available(widget.vault.entries);
-    final selected = EntryFilters.prune(_selectedFilters, filters);
-    if (selected.length != _selectedFilters.length) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() => _selectedFilters = selected);
-      });
-    }
-    final items = EntryFilters.apply(searched, filters, selected);
+    final items = widget.vault.search(_search.text);
     final groups = EntryGroups.from(items);
     return Scaffold(
       appBar: AppBar(
@@ -380,16 +385,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
             ),
           ),
-          EntryFilterBar(
-            filters: filters,
-            selectedIds: selected,
-            onChanged: (next) => setState(() => _selectedFilters = next),
-          ),
           Expanded(
             child: items.isEmpty
                 ? Center(
                     child: Text(
-                      _search.text.isEmpty && selected.isEmpty
+                      _search.text.isEmpty
                           ? 'Aucune entrée. Ajoutez votre premier mot de passe.'
                           : 'Aucun résultat.',
                       style: TextStyle(color: AppTheme.ink.withValues(alpha: 0.6)),

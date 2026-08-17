@@ -9,22 +9,26 @@ class AppPreferences {
     this.autoPasteEnabled = false,
     this.breachCheckEnabled = false,
     this.chromeAutoImportEnabled = false,
+    this.skippedUpdateVersion = '',
   });
 
   final bool autoPasteEnabled;
   final bool breachCheckEnabled;
   final bool chromeAutoImportEnabled;
+  final String skippedUpdateVersion;
 
   AppPreferences copyWith({
     bool? autoPasteEnabled,
     bool? breachCheckEnabled,
     bool? chromeAutoImportEnabled,
+    String? skippedUpdateVersion,
   }) {
     return AppPreferences(
       autoPasteEnabled: autoPasteEnabled ?? this.autoPasteEnabled,
       breachCheckEnabled: breachCheckEnabled ?? this.breachCheckEnabled,
       chromeAutoImportEnabled:
           chromeAutoImportEnabled ?? this.chromeAutoImportEnabled,
+      skippedUpdateVersion: skippedUpdateVersion ?? this.skippedUpdateVersion,
     );
   }
 
@@ -32,6 +36,7 @@ class AppPreferences {
         'autoPasteEnabled': autoPasteEnabled,
         'breachCheckEnabled': breachCheckEnabled,
         'chromeAutoImportEnabled': chromeAutoImportEnabled,
+        'skippedUpdateVersion': skippedUpdateVersion,
       };
 
   factory AppPreferences.fromJson(Map<String, dynamic> json) {
@@ -39,6 +44,7 @@ class AppPreferences {
       autoPasteEnabled: json['autoPasteEnabled'] as bool? ?? false,
       breachCheckEnabled: json['breachCheckEnabled'] as bool? ?? false,
       chromeAutoImportEnabled: json['chromeAutoImportEnabled'] as bool? ?? false,
+      skippedUpdateVersion: json['skippedUpdateVersion'] as String? ?? '',
     );
   }
 }
@@ -81,5 +87,9 @@ class PreferencesService {
 
   Future<void> setChromeAutoImport(bool value) async {
     await save(_prefs.copyWith(chromeAutoImportEnabled: value));
+  }
+
+  Future<void> setSkippedUpdateVersion(String value) async {
+    await save(_prefs.copyWith(skippedUpdateVersion: value));
   }
 }

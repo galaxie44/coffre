@@ -76,6 +76,14 @@ Collage clavier opt-in via Paramètres. Tout processus utilisateur peut lire le 
 3. Tentative de désinstallation Android via `ACTION_DELETE`.
 4. Windows : désinstallation manuelle guidée.
 
+## Mises à jour (Windows)
+
+Coffre interroge `https://api.github.com/repos/galaxie44/coffre/releases/latest` à l’ouverture.
+
+- Le téléchargement n’est proposé que si l’URL est GitHub (`galaxie44/coffre` ou `*.githubusercontent.com`).
+- L’installateur est lancé après accord de l’utilisateur.
+- Le fichier `vault.enc` n’est pas dans le dossier d’installation ; une mise à jour ne l’écrase pas.
+
 ## Revue sécurité (post-implémentation)
 
 Contrôles effectués :
