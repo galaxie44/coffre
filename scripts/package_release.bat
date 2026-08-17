@@ -8,7 +8,8 @@ if not exist %ISCC% set ISCC="%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe"
 set FLUTTER=%USERPROFILE%\flutter\bin\flutter.bat
 
 echo === Sync vers C:\Dev\Coffre ===
-robocopy "%~dp0.." "%ROOT%" /E /XD build .dart_tool .idea .gradle dist .git installer\windows\Output /NFL /NDL /NJH /NJS /nc /ns /np >nul
+robocopy "%~dp0.." "%ROOT%" /E /XD build .dart_tool .idea .gradle dist .git installer\windows\Output ephemeral .plugin_symlinks /NFL /NDL /NJH /NJS /nc /ns /np >nul
+if exist "%ROOT%\apps\coffre\windows\flutter\ephemeral" rmdir /s /q "%ROOT%\apps\coffre\windows\flutter\ephemeral"
 
 echo === Build Windows ===
 cd /d "%ROOT%\apps\coffre"
