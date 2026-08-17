@@ -26,10 +26,11 @@ jobs:
       - name: Stage dist
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path dist/windows/Coffre | Out-Null
-          Copy-Item -Recurse -Force apps/coffre/build/windows/x64/runner/Release/* dist/windows/Coffre/
+          New-Item -ItemType Directory -Force -Path installer/payload | Out-Null
+          robocopy apps/coffre/build/windows/x64/runner/Release installer/payload /E
+          if ($LASTEXITCODE -ge 8) { throw "robocopy failed: $LASTEXITCODE" }
           if (Test-Path apps/coffre/assets/icon/coffre.ico) {
-            Copy-Item apps/coffre/assets/icon/coffre.ico dist/windows/Coffre/Coffre.ico -Force
+            Copy-Item apps/coffre/assets/icon/coffre.ico installer/payload/Coffre.ico -Force
           }
       - name: Install Inno Setup
         run: choco install innosetup -y

@@ -17,10 +17,10 @@ if errorlevel 1 exit /b 1
 call "%FLUTTER%" build windows --release
 if errorlevel 1 exit /b 1
 
-if exist "%ROOT%\dist\windows\Coffre" rmdir /s /q "%ROOT%\dist\windows\Coffre"
-mkdir "%ROOT%\dist\windows\Coffre"
-xcopy /E /I /Y "%ROOT%\apps\coffre\build\windows\x64\runner\Release\*" "%ROOT%\dist\windows\Coffre\" >nul
-if exist "%ROOT%\apps\coffre\assets\icon\coffre.ico" copy /Y "%ROOT%\apps\coffre\assets\icon\coffre.ico" "%ROOT%\dist\windows\Coffre\Coffre.ico" >nul
+if exist "%ROOT%\installer\payload" rmdir /s /q "%ROOT%\installer\payload"
+mkdir "%ROOT%\installer\payload"
+robocopy "%ROOT%\apps\coffre\build\windows\x64\runner\Release" "%ROOT%\installer\payload" /E /NFL /NDL /NJH /NJS /nc /ns /np
+if exist "%ROOT%\apps\coffre\assets\icon\coffre.ico" copy /Y "%ROOT%\apps\coffre\assets\icon\coffre.ico" "%ROOT%\installer\payload\Coffre.ico" >nul
 
 echo === Installateur Inno Setup ===
 if not exist %ISCC% (
