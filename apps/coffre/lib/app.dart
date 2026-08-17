@@ -20,6 +20,7 @@ import 'services/vault_service.dart';
 import 'services/foreground_window.dart';
 import 'services/windows_desktop_service.dart';
 import 'theme/app_theme.dart';
+import 'widgets/app_update_banner.dart';
 
 class CoffreApp extends StatefulWidget {
   const CoffreApp({super.key, this.instanceGuard});
@@ -42,6 +43,7 @@ class _CoffreAppState extends State<CoffreApp> with WidgetsBindingObserver {
   late final BridgeService _bridge;
   GlobalAutofillService? _globalAutofill;
   WindowsDesktopService? _windows;
+  late final AppUpdateController _updates;
 
   bool _booting = true;
   bool _vaultExists = false;
@@ -55,7 +57,14 @@ class _CoffreAppState extends State<CoffreApp> with WidgetsBindingObserver {
     _autoLock = AutoLockService(onLock: _lock);
     _bridge = BridgeService(_vault);
     _vault.addListener(_onVaultChanged);
+    _updates = AppUpdateController(onQuit: _quit);
+    _updates.addListener(_onUpdateChanged);
     _bootstrap();
+    unawaited(_updates.checkAndInstall());
+  }
+
+  void _onUpdateChanged() {
+    if (mounted) setState(() {});
   }
 
   Future<void> _bootstrap() async {
@@ -176,6 +185,9 @@ class _CoffreAppState extends State<CoffreApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && !_updates.downloading) {
+      unawaited(_updates.checkAndInstall());
+    }
     // Windows : masquer dans le tray ne doit pas verrouiller.
     if (Platform.isWindows) return;
     // Android : ne pas verrouiller dès que l’app passe en arrière-plan.
@@ -191,6 +203,8 @@ class _CoffreAppState extends State<CoffreApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _updates.removeListener(_onUpdateChanged);
+    _updates.dispose();
     _vault.removeListener(_onVaultChanged);
     _autoLock.dispose();
     _clipboard.dispose();
@@ -217,7 +231,7 @@ class _CoffreAppState extends State<CoffreApp> with WidgetsBindingObserver {
         onLock: _lock,
         onActivity: _activity,
         windows: _windows,
-        onQuitForUpdate: _quit,
+        updates: _updates,
       );
     }
     return UnlockScreen(vault: _vault, biometric: _biometric);
@@ -264,7 +278,18 @@ class _CoffreAppState extends State<CoffreApp> with WidgetsBindingObserver {
         return Listener(
           behavior: HitTestBehavior.translucent,
           onPointerDown: (_) => _activity(),
-          child: child ?? const SizedBox.shrink(),
+          child: Column(
+            children: [
+              if (_updates.visible) AppUpdateBanner(controller: _updates),
+              Expanded(
+                child: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: _updates.visible,
+                  child: child ?? const SizedBox.shrink(),
+                ),
+              ),
+            ],
+          ),
         );
       },
       home: _buildShell(),

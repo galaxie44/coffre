@@ -12,11 +12,10 @@ import '../services/preferences_service.dart';
 import '../services/sequential_clipboard_service.dart';
 import '../services/vault_service.dart';
 import '../services/windows_desktop_service.dart';
-import '../services/app_update_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/credential_capture.dart';
 import '../utils/entry_groups.dart';
-import '../widgets/app_update_prompt.dart';
+import '../widgets/app_update_banner.dart';
 import '../widgets/entry_group_card.dart';
 import '../widgets/quick_fill_sheet.dart';
 import '../widgets/sequential_copy_banner.dart';
@@ -37,7 +36,7 @@ class HomeScreen extends StatefulWidget {
     required this.onLock,
     required this.onActivity,
     this.windows,
-    this.onQuitForUpdate,
+    this.updates,
   });
 
   final VaultService vault;
@@ -48,7 +47,7 @@ class HomeScreen extends StatefulWidget {
   final VoidCallback onLock;
   final VoidCallback onActivity;
   final WindowsDesktopService? windows;
-  final Future<void> Function()? onQuitForUpdate;
+  final AppUpdateController? updates;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -57,8 +56,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final _search = TextEditingController();
   bool _handlingPendingSave = false;
-  AppUpdateInfo? _pendingUpdate;
-  String _appVersion = '';
 
   @override
   void initState() {
@@ -70,7 +67,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _checkChromeImport();
       _autoImportChromeIfEnabled();
       _normalizeTitlesOnce();
-      _checkAppUpdate();
     });
   }
 
@@ -97,33 +93,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         );
       }
     } catch (_) {}
-  }
-
-  Future<void> _checkAppUpdate() async {
-    try {
-      final current = await AppUpdateService().installedVersion();
-      if (mounted) setState(() => _appVersion = current);
-    } catch (_) {}
-    if (!mounted) return;
-    final latest = await AppUpdatePrompt.check(
-      context: context,
-      preferences: widget.preferences,
-      onQuit: widget.onQuitForUpdate,
-    );
-    if (mounted) setState(() => _pendingUpdate = latest);
-  }
-
-  Future<void> _openPendingUpdate() async {
-    final info = _pendingUpdate;
-    if (info == null) return;
-    await AppUpdatePrompt.show(
-      context: context,
-      preferences: widget.preferences,
-      info: info,
-      currentVersion: _appVersion.isEmpty ? '1.0.0' : _appVersion,
-      onQuit: widget.onQuitForUpdate ?? () async {},
-      allowSkip: true,
-    );
   }
 
   Future<void> _normalizeTitlesOnce() async {
@@ -266,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           biometric: widget.biometric,
           preferences: widget.preferences,
           windows: widget.windows,
-          onQuitForUpdate: widget.onQuitForUpdate,
+          updates: widget.updates,
           onLock: widget.onLock,
           onOpenDanger: () {
             Navigator.of(context).push(
@@ -351,9 +320,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Coffre'),
-            if (_appVersion.isNotEmpty)
+            if ((widget.updates?.currentVersion ?? '').isNotEmpty)
               Text(
-                'Version $_appVersion',
+                'Version ${widget.updates!.currentVersion}',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
@@ -418,32 +387,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
             ),
           ),
-          if (_pendingUpdate != null)
-            Material(
-              color: AppTheme.teal,
-              child: InkWell(
-                onTap: _openPendingUpdate,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.system_update_alt, color: Colors.white, size: 22),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          '${_pendingUpdate!.headline} — touchez pour installer',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            height: 1.3,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
           Expanded(
             child: items.isEmpty
                 ? Center(

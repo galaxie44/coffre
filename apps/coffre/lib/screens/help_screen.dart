@@ -65,7 +65,7 @@ class HelpScreen extends StatelessWidget {
           const _HelpSection(
             title: 'Mises à jour',
             body:
-                'À l’ouverture, Coffre consulte les Releases GitHub. Un bandeau teal et une fenêtre proposent d’installer la version plus récente (Setup Windows ou APK Android). Le coffre chiffré n’est pas modifié. Paramètres → Mettre à jour Coffre relance la vérification.',
+                'À l’ouverture, dès l’écran du mot de passe maître, Coffre vérifie GitHub. Un bandeau teal s’affiche et l’installation se lance toute seule (Setup Windows, APK Android). Android demande encore une confirmation système. Le coffre chiffré n’est pas modifié.',
           ),
           if (Platform.isWindows) ...[
             const _HelpSection(

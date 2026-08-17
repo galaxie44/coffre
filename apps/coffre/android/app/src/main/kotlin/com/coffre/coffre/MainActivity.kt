@@ -52,6 +52,22 @@ class MainActivity : FlutterFragmentActivity() {
                         try {
                             val path = call.argument<String>("path")
                                 ?: throw IllegalArgumentException("path")
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O &&
+                                !packageManager.canRequestPackageInstalls()
+                            ) {
+                                startActivity(
+                                    Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                                        data = Uri.parse("package:$packageName")
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    },
+                                )
+                                result.error(
+                                    "permission",
+                                    "Autorisez Coffre à installer des mises à jour, puis réessayez.",
+                                    null,
+                                )
+                                return@setMethodCallHandler
+                            }
                             val file = File(path)
                             if (!file.exists()) {
                                 result.error("missing", "Fichier introuvable", null)

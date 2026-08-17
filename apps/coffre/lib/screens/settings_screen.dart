@@ -12,7 +12,7 @@ import '../services/preferences_service.dart';
 import '../services/vault_service.dart';
 import '../services/windows_desktop_service.dart';
 import '../theme/app_theme.dart';
-import '../widgets/app_update_prompt.dart';
+import '../widgets/app_update_banner.dart';
 import 'help_screen.dart';
 import 'import_screen.dart';
 import 'security_screen.dart';
@@ -26,7 +26,7 @@ class SettingsScreen extends StatefulWidget {
     required this.onLock,
     required this.onOpenDanger,
     this.windows,
-    this.onQuitForUpdate,
+    this.updates,
   });
 
   final VaultService vault;
@@ -35,7 +35,7 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback onLock;
   final VoidCallback onOpenDanger;
   final WindowsDesktopService? windows;
-  final Future<void> Function()? onQuitForUpdate;
+  final AppUpdateController? updates;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -70,15 +70,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _checkUpdate() async {
-    if (_updateBusy) return;
+    final updates = widget.updates;
+    if (updates == null || _updateBusy) return;
     setState(() => _updateBusy = true);
     try {
-      await AppUpdatePrompt.check(
-        context: context,
-        preferences: widget.preferences,
-        onQuit: widget.onQuitForUpdate,
-        manual: true,
-      );
+      await updates.checkAndInstall();
+      if (!mounted) return;
+      if (updates.info == null && updates.error == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Coffre est à jour (${updates.currentVersion})',
+            ),
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _updateBusy = false);
     }
