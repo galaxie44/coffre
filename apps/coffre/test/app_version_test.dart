@@ -35,6 +35,7 @@ void main() {
     const json = '''
 {
   "tag_name": "v1.0.2",
+  "name": "Coffre 1.0.2 (test)",
   "draft": false,
   "assets": [
     {
@@ -48,9 +49,13 @@ void main() {
   ]
 }
 ''';
-    final info = AppUpdateService.parseLatest(json);
-    expect(info, isNotNull);
-    expect(info!.version, '1.0.2');
-    expect(info.downloadUrl.path, contains('Coffre-Setup-Windows.exe'));
+    final windows = AppUpdateService.parseLatest(json);
+    expect(windows, isNotNull);
+    expect(windows!.version, '1.0.2');
+    expect(windows.title, contains('test'));
+    expect(windows.downloadUrl.path, contains('Coffre-Setup-Windows.exe'));
+    final android = AppUpdateService.parseLatest(json, assetName: AppUpdateService.androidAsset);
+    expect(android, isNotNull);
+    expect(android!.fileName, 'Coffre.apk');
   });
 }

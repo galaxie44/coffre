@@ -81,7 +81,8 @@ Collage clavier opt-in via Paramètres. Tout processus utilisateur peut lire le 
 Coffre interroge `https://api.github.com/repos/galaxie44/coffre/releases/latest` à l’ouverture.
 
 - Le téléchargement n’est proposé que si l’URL est GitHub (`galaxie44/coffre` ou `*.githubusercontent.com`).
-- L’installateur est lancé après accord de l’utilisateur.
+- Windows : l’installateur est lancé après accord.
+- Android : l’APK est téléchargé puis Android demande l’installation (`REQUEST_INSTALL_PACKAGES`).
 - Le fichier `vault.enc` n’est pas dans le dossier d’installation ; une mise à jour ne l’écrase pas.
 
 ## Revue sécurité (post-implémentation)

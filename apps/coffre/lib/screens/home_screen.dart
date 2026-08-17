@@ -12,6 +12,7 @@ import '../services/preferences_service.dart';
 import '../services/sequential_clipboard_service.dart';
 import '../services/vault_service.dart';
 import '../services/windows_desktop_service.dart';
+import '../services/app_update_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/credential_capture.dart';
 import '../utils/entry_groups.dart';
@@ -56,6 +57,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final _search = TextEditingController();
   bool _handlingPendingSave = false;
+  AppUpdateInfo? _pendingUpdate;
+  String _appVersion = '';
 
   @override
   void initState() {
@@ -97,13 +100,29 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _checkAppUpdate() async {
-    if (!Platform.isWindows) return;
-    final quit = widget.onQuitForUpdate;
-    if (quit == null) return;
-    await AppUpdatePrompt.check(
+    try {
+      final current = await AppUpdateService().installedVersion();
+      if (mounted) setState(() => _appVersion = current);
+    } catch (_) {}
+    if (!mounted) return;
+    final latest = await AppUpdatePrompt.check(
       context: context,
       preferences: widget.preferences,
-      onQuit: quit,
+      onQuit: widget.onQuitForUpdate,
+    );
+    if (mounted) setState(() => _pendingUpdate = latest);
+  }
+
+  Future<void> _openPendingUpdate() async {
+    final info = _pendingUpdate;
+    if (info == null) return;
+    await AppUpdatePrompt.show(
+      context: context,
+      preferences: widget.preferences,
+      info: info,
+      currentVersion: _appVersion.isEmpty ? '1.0.0' : _appVersion,
+      onQuit: widget.onQuitForUpdate ?? () async {},
+      allowSkip: true,
     );
   }
 
@@ -328,7 +347,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final groups = EntryGroups.from(items);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Coffre'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Coffre'),
+            if (_appVersion.isNotEmpty)
+              Text(
+                'Version $_appVersion',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: AppTheme.ink.withValues(alpha: 0.55),
+                ),
+              ),
+          ],
+        ),
         actions: [
           if (Platform.isAndroid)
             IconButton(
@@ -385,6 +418,32 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
             ),
           ),
+          if (_pendingUpdate != null)
+            Material(
+              color: AppTheme.teal,
+              child: InkWell(
+                onTap: _openPendingUpdate,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.system_update_alt, color: Colors.white, size: 22),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          '${_pendingUpdate!.headline} — touchez pour installer',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            height: 1.3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           Expanded(
             child: items.isEmpty
                 ? Center(

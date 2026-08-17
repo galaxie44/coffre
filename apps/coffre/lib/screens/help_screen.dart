@@ -62,16 +62,16 @@ class HelpScreen extends StatelessWidget {
             body:
                 'Dans Paramètres, activez le déverrouillage secondaire. Le mot de passe maître reste obligatoire pour la création du coffre et la zone danger.',
           ),
+          const _HelpSection(
+            title: 'Mises à jour',
+            body:
+                'À l’ouverture, Coffre consulte les Releases GitHub. Un bandeau teal et une fenêtre proposent d’installer la version plus récente (Setup Windows ou APK Android). Le coffre chiffré n’est pas modifié. Paramètres → Mettre à jour Coffre relance la vérification.',
+          ),
           if (Platform.isWindows) ...[
             const _HelpSection(
               title: 'Importer Chrome',
               body:
                   'Paramètres → Importer maintenant depuis Chrome. Optionnel : « Importer Chrome à l’ouverture » pour ajouter uniquement les nouveaux (doublons ignorés). Fermez Chrome si la lecture échoue.',
-            ),
-            const _HelpSection(
-              title: 'Mises à jour',
-              body:
-                  'À l’ouverture, Coffre consulte les Releases GitHub du projet. Si une version plus récente existe, une fenêtre propose de l’installer. Le coffre chiffré sur le PC n’est pas modifié. Paramètres → Mettre à jour Coffre relance la vérification.',
             ),
             const _HelpSection(
               title: 'Remplissage navigateur (Windows)',

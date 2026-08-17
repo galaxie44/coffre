@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../services/app_update_service.dart';
@@ -8,37 +10,38 @@ import '../utils/app_version.dart';
 class AppUpdatePrompt {
   AppUpdatePrompt._();
 
-  static Future<void> check({
+  static Future<AppUpdateInfo?> check({
     required BuildContext context,
     required PreferencesService preferences,
-    required Future<void> Function() onQuit,
+    Future<void> Function()? onQuit,
     bool manual = false,
   }) async {
     final service = AppUpdateService();
     try {
       final current = await service.installedVersion();
       final latest = await service.fetchLatest();
-      if (!context.mounted) return;
+      if (!context.mounted) return null;
       if (latest == null || !AppVersion.isNewer(latest.version, current)) {
         if (manual) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Coffre est à jour ($current)')),
           );
         }
-        return;
+        return null;
       }
       if (!manual && preferences.prefs.skippedUpdateVersion == latest.version) {
-        return;
+        return latest;
       }
       await show(
         context: context,
         preferences: preferences,
         info: latest,
         currentVersion: current,
-        onQuit: onQuit,
+        onQuit: onQuit ?? () async {},
         service: service,
         allowSkip: !manual,
       );
+      return latest;
     } catch (_) {
       if (manual && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -47,6 +50,7 @@ class AppUpdatePrompt {
           ),
         );
       }
+      return null;
     }
   }
 
@@ -114,7 +118,11 @@ class _UpdateDialogState extends State<_UpdateDialog> {
         },
       );
       await widget.service.launchInstaller(file);
-      await widget.onQuit();
+      if (Platform.isWindows) {
+        await widget.onQuit();
+      } else if (mounted) {
+        Navigator.pop(context);
+      }
     } catch (_) {
       if (mounted) {
         setState(() {
@@ -142,8 +150,10 @@ class _UpdateDialogState extends State<_UpdateDialog> {
         children: [
           Text(
             _downloading
-                ? 'Coffre va se fermer pour installer la version ${widget.info.version}.'
-                : 'La version ${widget.info.version} est prête (vous avez ${widget.currentVersion}). Vos mots de passe restent sur ce PC.',
+                ? (Platform.isAndroid
+                    ? 'Android va demander d’installer Coffre ${widget.info.version}.'
+                    : 'Coffre va se fermer pour installer la version ${widget.info.version}.')
+                : '${widget.info.headline} est prête (vous avez ${widget.currentVersion}). Vos mots de passe restent sur cet appareil.',
             style: const TextStyle(height: 1.4),
           ),
           if (_downloading) ...[

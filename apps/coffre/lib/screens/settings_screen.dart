@@ -70,14 +70,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _checkUpdate() async {
-    final quit = widget.onQuitForUpdate;
-    if (!Platform.isWindows || quit == null || _updateBusy) return;
+    if (_updateBusy) return;
     setState(() => _updateBusy = true);
     try {
       await AppUpdatePrompt.check(
         context: context,
         preferences: widget.preferences,
-        onQuit: quit,
+        onQuit: widget.onQuitForUpdate,
         manual: true,
       );
     } finally {
@@ -378,8 +377,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               value: _chromePwmDisabled,
               onChanged: _chromePwmBusy ? null : _toggleChromePwm,
             ),
-          if (Platform.isWindows)
-            ListTile(
+          ListTile(
               leading: _updateBusy
                   ? const SizedBox(
                       width: 24,
