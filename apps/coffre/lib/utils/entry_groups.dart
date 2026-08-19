@@ -56,7 +56,7 @@ class EntryGroups {
       }
       buckets[key]!.add(entry);
     }
-    return order.map((key) {
+    final groups = order.map((key) {
       final list = buckets[key]!;
       list.sort(
         (a, b) => EntryDisplay.title(a).toLowerCase().compareTo(
@@ -65,5 +65,15 @@ class EntryGroups {
       );
       return EntryGroup(entries: list);
     }).toList();
+
+    groups.sort(
+      (a, b) => _groupLabel(a).toLowerCase().compareTo(_groupLabel(b).toLowerCase()),
+    );
+    return groups;
+  }
+
+  static String _groupLabel(EntryGroup group) {
+    if (group.isShared) return group.username;
+    return EntryDisplay.title(group.primary);
   }
 }

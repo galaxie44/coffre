@@ -22,6 +22,9 @@ if exist "%ROOT%\installer\payload" rmdir /s /q "%ROOT%\installer\payload"
 mkdir "%ROOT%\installer\payload"
 robocopy "%ROOT%\apps\coffre\build\windows\x64\runner\Release" "%ROOT%\installer\payload" /E /NFL /NDL /NJH /NJS /nc /ns /np
 if exist "%ROOT%\apps\coffre\assets\icon\coffre.ico" copy /Y "%ROOT%\apps\coffre\assets\icon\coffre.ico" "%ROOT%\installer\payload\Coffre.ico" >nul
+if not exist "%ROOT%\installer\payload\native_host" mkdir "%ROOT%\installer\payload\native_host"
+copy /Y "%ROOT%\extension\native_host\coffre_native_host.py" "%ROOT%\installer\payload\native_host\" >nul
+copy /Y "%ROOT%\extension\native_host\install_host.py" "%ROOT%\installer\payload\native_host\" >nul
 
 echo === Installateur Inno Setup ===
 if not exist %ISCC% (

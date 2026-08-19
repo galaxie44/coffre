@@ -332,6 +332,16 @@ async function preloadCache() {
   } catch (_) {}
 }
 
+function entrySortKey(entry) {
+  return (entry.username || entry.title || "").trim().toLowerCase();
+}
+
+function sortEntriesAlphabetically(entries) {
+  return [...entries].sort((a, b) =>
+    entrySortKey(a).localeCompare(entrySortKey(b), "fr", { sensitivity: "base" })
+  );
+}
+
 async function loadEntries(kind) {
   const token = ++loadToken;
   lastError = "";
@@ -361,23 +371,17 @@ async function loadEntries(kind) {
     if (lastError) return;
 
     const entries = response.entries || [];
-    const domain = pageDomain();
 
     if (kind === FIELD.EMAIL || kind === FIELD.USERNAME) {
       const seen = new Set();
-      const sorted = [...entries].sort((a, b) => {
-        const am = domainMatches(domain, domainFromUrl(a.url) || a.domain) ? 0 : 1;
-        const bm = domainMatches(domain, domainFromUrl(b.url) || b.domain) ? 0 : 1;
-        return am - bm;
-      });
-      lastEntries = sorted.filter((e) => {
+      lastEntries = sortEntriesAlphabetically(entries).filter((e) => {
         const u = (e.username || "").trim();
         if (!u || seen.has(u.toLowerCase())) return false;
         seen.add(u.toLowerCase());
         return true;
       });
     } else {
-      lastEntries = entries.filter((e) => e.password);
+      lastEntries = sortEntriesAlphabetically(entries.filter((e) => e.password));
     }
   } catch (_) {
     lastError = "Impossible de contacter Coffre.";
