@@ -97,12 +97,16 @@ class AppUpdateService {
     }
     final decoded = jsonDecode(response.body);
     if (decoded is List) {
+      AppUpdateInfo? newest;
       for (final release in decoded) {
         if (release is! Map) continue;
         final info = parseRelease(release, assetName: platformAsset);
-        if (info != null) return info;
+        if (info == null) continue;
+        if (newest == null || AppVersion.isNewer(info.version, newest.version)) {
+          newest = info;
+        }
       }
-      return null;
+      return newest;
     }
     if (decoded is Map) {
       return parseRelease(decoded, assetName: platformAsset);

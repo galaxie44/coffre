@@ -158,7 +158,7 @@ class HelpScreen extends StatelessWidget {
                   'Si vous créez un compte inconnu de Coffre, Android propose de l’enregistrer. Même identifiant + nouveau mot de passe → mise à jour.',
             ),
           ],
-          const _HelpSection(
+          _HelpSection(
             title: 'Mises à jour',
             body: Platform.isAndroid
                 ? 'Paramètres → Rechercher les mises à jour. À partir de la 1.0.10, les APK sont signés de façon stable. Si Android affiche un conflit de package, désinstallez Coffre une fois puis réinstallez depuis le site (vos données locales seront effacées).'
