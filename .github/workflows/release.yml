@@ -26,11 +26,16 @@ jobs:
       - name: Stage dist
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path dist/windows/Coffre | Out-Null
-          Copy-Item -Recurse -Force apps/coffre/build/windows/x64/runner/Release/* dist/windows/Coffre/
+          if (Test-Path installer/payload) { Remove-Item -Recurse -Force installer/payload }
+          New-Item -ItemType Directory -Force -Path installer/payload | Out-Null
+          Copy-Item -Recurse -Force apps/coffre/build/windows/x64/runner/Release/* installer/payload/
           if (Test-Path apps/coffre/assets/icon/coffre.ico) {
-            Copy-Item apps/coffre/assets/icon/coffre.ico dist/windows/Coffre/Coffre.ico -Force
+            Copy-Item apps/coffre/assets/icon/coffre.ico installer/payload/Coffre.ico -Force
           }
+          New-Item -ItemType Directory -Force -Path installer/payload/native_host | Out-Null
+          Copy-Item -Force extension/native_host/*.py installer/payload/native_host/
+          Copy-Item -Force extension/native_host/*.bat installer/payload/native_host/
+          Copy-Item -Force extension/native_host/*.json installer/payload/native_host/
       - name: Install Inno Setup
         run: choco install innosetup -y
       - name: Compile installer
@@ -42,8 +47,9 @@ jobs:
             "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe"
           ) | Where-Object { Test-Path $_ } | Select-Object -First 1
           if (-not $iscc) { throw "ISCC.exe introuvable" }
-          & $iscc installer\windows\coffre.iss
           & $iscc installer\windows\coffre_wipe.iss
+          Copy-Item -Force installer/windows/Output/Coffre-Supprimer-Tout.exe installer/payload/
+          & $iscc installer\windows\coffre.iss
       - uses: actions/upload-artifact@v4
         with:
           name: windows-setup
@@ -83,9 +89,9 @@ jobs:
       - name: Prepare assets
         run: |
           mkdir -p dist/release
-          cp windows-setup/Coffre-Setup-Windows.exe dist/release/
-          cp windows-setup/Coffre-Supprimer-Tout.exe dist/release/
-          cp android-apk/app-release.apk dist/release/Coffre.apk
+          cp "$(find windows-setup -name 'Coffre-Setup-Windows.exe' | head -1)" dist/release/
+          cp "$(find windows-setup -name 'Coffre-Supprimer-Tout.exe' | head -1)" dist/release/
+          cp "$(find android-apk -name 'app-release.apk' | head -1)" dist/release/Coffre.apk
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
