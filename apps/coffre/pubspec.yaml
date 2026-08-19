@@ -1,7 +1,7 @@
 name: coffre
-description: Gestionnaire de mots de passe local chiffré (Android + Windows).
+description: Gestionnaire de mots de passe local chiffré (Windows, Android, macOS, Linux).
 publish_to: "none"
-version: 1.0.7+8
+version: 1.0.8+9
 
 environment:
   sdk: ^3.12.2
@@ -26,6 +26,7 @@ dependencies:
   otp: ^3.1.4
   http: ^1.2.2
   package_info_plus: ^8.3.0
+  url_launcher: ^6.3.1
   crypto: ^3.0.6
   sqlite3: ^2.9.4
   sqlite3_flutter_libs: ^0.5.39

@@ -4,154 +4,132 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Coffre — gestionnaire de mots de passe local</title>
-  <meta name="description" content="Téléchargez Coffre pour Windows ou Android. Un seul fichier à lancer. 100 % local, sans compte cloud.">
+  <meta name="description" content="Téléchargez Coffre pour Windows, Android, macOS ou Linux. 100 % local, sans compte cloud.">
   <link rel="icon" href="icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --teal: #0a6b6b;
-      --teal-dark: #074747;
-      --ink: #1a2426;
-      --mist: #e8eef2;
-      --line: rgba(26, 36, 38, 0.12);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Outfit, system-ui, sans-serif;
-      color: var(--ink);
-      background: var(--mist);
-      line-height: 1.5;
-    }
-    main {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 48px 20px 80px;
-    }
-    header {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      margin-bottom: 28px;
-    }
-    header img {
-      width: 64px;
-      height: 64px;
-      border-radius: 16px;
-    }
-    h1 {
-      margin: 0;
-      font-size: 2rem;
-      font-weight: 700;
-    }
-    .lede {
-      margin: 0 0 32px;
-      color: rgba(26, 36, 38, 0.72);
-      font-size: 1.05rem;
-    }
-    .downloads {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: 1fr 1fr;
-      margin-bottom: 28px;
-    }
-    a.btn {
-      display: block;
-      text-decoration: none;
-      background: var(--teal);
-      color: #fff;
-      border-radius: 12px;
-      padding: 18px 20px;
-      font-weight: 600;
-    }
-    a.btn.secondary {
-      background: #fff;
-      color: var(--ink);
-      border: 1px solid var(--line);
-    }
-    a.btn small {
-      display: block;
-      margin-top: 4px;
-      font-weight: 400;
-      opacity: 0.85;
-      font-size: 0.85rem;
-    }
-    section {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 20px 22px;
-      margin-bottom: 12px;
-    }
-    h2 {
-      margin: 0 0 8px;
-      font-size: 1.05rem;
-    }
-    p, li { margin: 0; }
-    ul { margin: 8px 0 0; padding-left: 18px; }
-    .foot {
-      margin-top: 24px;
-      font-size: 0.9rem;
-      color: rgba(26, 36, 38, 0.55);
-    }
-    .foot a { color: var(--teal-dark); }
-    @media (max-width: 640px) {
-      .downloads { grid-template-columns: 1fr; }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
-    <header>
-      <img src="icon.png" alt="Icône Coffre">
-      <div>
-        <h1>Coffre</h1>
-        <div>Gestionnaire de mots de passe local</div>
-      </div>
-    </header>
-    <p class="lede">
-      Un fichier à télécharger, un double-clic pour installer. Pas de compte, pas de cloud :
-      le coffre reste chiffré sur votre appareil.
-    </p>
-    <div class="downloads">
-      <a class="btn" href="https://github.com/galaxie44/coffre/releases/latest/download/Coffre-Setup-Windows.exe">
-        Télécharger pour Windows
-        <small>Coffre-Setup-Windows.exe — installe Coffre + le programme de suppression totale</small>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="index.html">
+        <img src="icon.png" alt="Icône Coffre">
+        <div>
+          <h1>Coffre</h1>
+          <div>Gestionnaire de mots de passe local</div>
+        </div>
       </a>
-      <a class="btn secondary" href="https://github.com/galaxie44/coffre/releases/latest/download/Coffre.apk">
-        Télécharger pour Android
-        <small>Coffre.apk — ouvrez le fichier sur le téléphone</small>
-      </a>
+      <nav class="nav-links">
+        <a class="active" href="index.html">Télécharger</a>
+        <a href="aide.html">Guide pas à pas</a>
+        <a href="https://github.com/galaxie44/coffre">Code source</a>
+      </nav>
     </div>
-    <section>
+
+    <section class="hero">
+      <p>
+        Choisissez votre appareil ci-dessous. Coffre reste chiffré sur votre machine :
+        pas de compte, pas de cloud, pas de serveur.
+      </p>
+    </section>
+
+    <div class="platform-tabs" role="tablist">
+      <button class="tab-btn active" data-tab="windows" type="button">Windows<small>Installateur .exe</small></button>
+      <button class="tab-btn" data-tab="android" type="button">Android<small>Fichier .apk</small></button>
+      <button class="tab-btn" data-tab="macos" type="button">macOS<small>Apple Silicon & Intel</small></button>
+      <button class="tab-btn" data-tab="linux" type="button">Linux<small>Archive .tar.gz</small></button>
+    </div>
+
+    <section class="platform-panel active" id="panel-windows">
+      <span class="badge ready">Disponible</span>
+      <h2>Coffre pour Windows</h2>
+      <p>Double-cliquez l’installateur. Aucun droit administrateur requis.</p>
+      <a class="download-btn" href="https://github.com/galaxie44/coffre/releases/latest/download/Coffre-Setup-Windows.exe">
+        Télécharger Coffre-Setup-Windows.exe
+        <small>Inclut le programme « Tout supprimer »</small>
+      </a>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div><h3>Téléchargez</h3><p>Cliquez le bouton ci-dessus ou ouvrez la page <a href="https://github.com/galaxie44/coffre/releases">Releases</a>.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div><h3>Installez</h3><p>Lancez l’installateur → Suivant → Installer. Raccourci Bureau + menu Démarrer.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div><h3>Créez le mot de passe maître</h3><p>12 caractères minimum. S’il est perdu, le coffre est irrécupérable.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div><h3>Utilisez Coffre</h3><p>Ajoutez vos comptes, <strong>Ctrl+Shift+Espace</strong> pour l’accès rapide, extension Chrome pour le web.</p></div></div>
+      </div>
+    </section>
+
+    <section class="platform-panel" id="panel-android">
+      <span class="badge ready">Disponible</span>
+      <h2>Coffre pour Android</h2>
+      <p>Copiez l’APK sur le téléphone et ouvrez-le.</p>
+      <a class="download-btn" href="https://github.com/galaxie44/coffre/releases/latest/download/Coffre.apk">
+        Télécharger Coffre.apk
+        <small>Autorisez « sources inconnues » si Android le demande</small>
+      </a>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div><h3>Téléchargez l’APK</h3><p>Sur le téléphone ou transférez-le depuis un PC.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div><h3>Installez</h3><p>Ouvrez le fichier → Installer. Confirmez si Android affiche un avertissement.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div><h3>Activez le remplissage auto</h3><p>Coffre → Paramètres → Activer le remplissage automatique → choisissez Coffre.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div><h3>Connectez-vous</h3><p>Touchez un champ identifiant dans Chrome ou une app : suggestion Coffre au-dessus du clavier.</p></div></div>
+      </div>
+    </section>
+
+    <section class="platform-panel" id="panel-macos">
+      <span class="badge soon">Nouveau — v1.0.8+</span>
+      <h2>Coffre pour macOS</h2>
+      <p>Version bureau pour Mac (Apple Silicon et Intel). Téléchargement disponible dès la prochaine release GitHub.</p>
+      <a class="download-btn secondary" href="https://github.com/galaxie44/coffre/releases/latest/download/Coffre-macOS.zip">
+        Télécharger Coffre-macOS.zip
+        <small>Si absent : la build arrive avec la prochaine mise à jour</small>
+      </a>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div><h3>Téléchargez le .zip</h3><p>Décompressez pour obtenir <strong>Coffre.app</strong>.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div><h3>Première ouverture</h3><p>Clic droit → Ouvrir (macOS bloque les apps non signées au premier lancement).</p></div></div>
+        <div class="step"><div class="step-num">3</div><div><h3>Glissez dans Applications</h3><p>Optionnel : placez Coffre.app dans le dossier Applications.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div><h3>Créez votre coffre</h3><p>Même principe que Windows : mot de passe maître local, liste de comptes chiffrée.</p></div></div>
+      </div>
+    </section>
+
+    <section class="platform-panel" id="panel-linux">
+      <span class="badge soon">Nouveau — v1.0.8+</span>
+      <h2>Coffre pour Linux</h2>
+      <p>Archive prête à l’emploi pour distributions x64 (Ubuntu, Debian, Fedora…).</p>
+      <a class="download-btn secondary" href="https://github.com/galaxie44/coffre/releases/latest/download/Coffre-Linux-x64.tar.gz">
+        Télécharger Coffre-Linux-x64.tar.gz
+        <small>Si absent : la build arrive avec la prochaine mise à jour</small>
+      </a>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div><h3>Extrayez l’archive</h3><p><code>tar -xzf Coffre-Linux-x64.tar.gz</code> puis entrez dans le dossier <strong>coffre</strong>.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div><h3>Lancez</h3><p><code>./coffre</code> — installez les dépendances GTK si demandé par votre distro.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div><h3>Créez le mot de passe maître</h3><p>Le coffre est stocké dans votre dossier utilisateur, chiffré localement.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div><h3>Raccourci (optionnel)</h3><p>Créez un lanceur .desktop pointant vers le binaire <code>coffre</code>.</p></div></div>
+      </div>
+    </section>
+
+    <section class="card">
       <h2>Mettre à jour</h2>
-      <p>La première version ne se met pas à jour toute seule. Téléchargez Windows ou Android ci-dessus et installez <strong>par-dessus</strong> (ne désinstallez pas : le coffre serait perdu). À partir de la 1.0.1, Coffre propose ensuite les mises à jour à l'ouverture.</p>
+      <p>À partir de la 1.0.1, Coffre propose les mises à jour à l’ouverture (Windows & Android). Installez par-dessus sans désinstaller — sinon le coffre local serait perdu.</p>
     </section>
-    <section>
-      <h2>Windows</h2>
-      <ul>
-        <li>Double-cliquez l'installateur, puis « Installer ».</li>
-        <li>Coffre apparaît dans le menu Démarrer et sur le Bureau.</li>
-        <li>Aucun mode développeur n'est requis pour l'installateur.</li>
-        <li><strong>Tout supprimer :</strong> menu Démarrer → « Coffre — Tout supprimer ». Ferme Coffre, le désinstalle et détruit le coffre local (irréversible).</li>
-      </ul>
+
+    <section class="card">
+      <h2>Besoin d’aide ?</h2>
+      <p>Consultez le <a href="aide.html">guide pas à pas avec captures</a> ou le bouton <strong>Aide</strong> dans l’application (accueil ou Paramètres).</p>
     </section>
-    <section>
-      <h2>Android</h2>
-      <ul>
-        <li>Copiez l'APK sur le téléphone et ouvrez-le.</li>
-        <li>Autorisez l'installation depuis cette source si Android le demande.</li>
-        <li>Dans Coffre : Paramètres → Activer le remplissage automatique.</li>
-        <li>Pour tout effacer : Paramètres Android → Applications → Coffre → Désinstaller (le coffre est détruit avec l'app).</li>
-      </ul>
-    </section>
-    <section>
-      <h2>Code source</h2>
-      <p>Le projet est public : <a href="https://github.com/galaxie44/coffre">github.com/galaxie44/coffre</a>. Les mises à jour se trouvent dans <a href="https://github.com/galaxie44/coffre/releases">Releases</a>.</p>
-    </section>
+
     <p class="foot">100 % local · Argon2id + AES-256-GCM · pas de télémétrie</p>
-  </main>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll(".tab-btn");
+    const panels = document.querySelectorAll(".platform-panel");
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((t) => t.classList.remove("active"));
+        panels.forEach((p) => p.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById("panel-" + tab.dataset.tab).classList.add("active");
+      });
+    });
+  </script>
 </body>
 </html>

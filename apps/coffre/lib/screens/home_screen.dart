@@ -21,6 +21,7 @@ import '../widgets/quick_fill_sheet.dart';
 import '../widgets/sequential_copy_banner.dart';
 import 'danger_screen.dart';
 import 'entry_form_screen.dart';
+import 'help_screen.dart';
 import 'settings_screen.dart';
 import 'import_screen.dart';
 import 'security_screen.dart';
@@ -357,6 +358,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             tooltip: 'Verrouiller',
             onPressed: widget.onLock,
             icon: const Icon(Icons.lock_outline),
+          ),
+          IconButton(
+            tooltip: 'Aide',
+            onPressed: () {
+              widget.onActivity();
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const HelpScreen()),
+              );
+            },
+            icon: const Icon(Icons.help_outline),
           ),
           IconButton(
             tooltip: 'Paramètres',

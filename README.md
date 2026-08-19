@@ -1,9 +1,10 @@
 # Coffre
 
-Gestionnaire de mots de passe **local** pour Windows et Android.  
+Gestionnaire de mots de passe **local** pour Windows, Android, macOS et Linux.  
 Pas de compte, pas de cloud, pas de serveur à vous : les données restent chiffrées sur l’appareil.
 
-Page de téléchargement : [galaxie44.github.io/coffre](https://galaxie44.github.io/coffre/)
+Page de téléchargement : [galaxie44.github.io/coffre](https://galaxie44.github.io/coffre/)  
+Guide pas à pas : [galaxie44.github.io/coffre/aide.html](https://galaxie44.github.io/coffre/aide.html)
 
 ## Télécharger
 
@@ -11,6 +12,8 @@ Page de téléchargement : [galaxie44.github.io/coffre](https://galaxie44.github
 |----------|---------|
 | **Windows** | [Coffre-Setup-Windows.exe](https://github.com/galaxie44/coffre/releases/latest/download/Coffre-Setup-Windows.exe) |
 | **Android** | [Coffre.apk](https://github.com/galaxie44/coffre/releases/latest/download/Coffre.apk) |
+| **macOS** | [Coffre-macOS.zip](https://github.com/galaxie44/coffre/releases/latest/download/Coffre-macOS.zip) |
+| **Linux** | [Coffre-Linux-x64.tar.gz](https://github.com/galaxie44/coffre/releases/latest/download/Coffre-Linux-x64.tar.gz) |
 | **Tout supprimer (Windows)** | [Coffre-Supprimer-Tout.exe](https://github.com/galaxie44/coffre/releases/latest/download/Coffre-Supprimer-Tout.exe) |
 
 Toutes les versions : [Releases](https://github.com/galaxie44/coffre/releases).

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guide Coffre — installation et utilisation</title>
+  <meta name="description" content="Tutoriel pas à pas pour installer et utiliser Coffre sur Windows et Android.">
+  <link rel="icon" href="icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="index.html">
+        <img src="icon.png" alt="Icône Coffre">
+        <div>
+          <h1>Guide Coffre</h1>
+          <div>Installation et utilisation</div>
+        </div>
+      </a>
+      <nav class="nav-links">
+        <a href="index.html">Télécharger</a>
+        <a class="active" href="aide.html">Guide pas à pas</a>
+        <a href="https://github.com/galaxie44/coffre">Code source</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p>Ce guide explique étape par étape comment installer Coffre, créer votre coffre et remplir vos identifiants. Les visuels ci-dessous reproduisent l’interface réelle de l’application.</p>
+    </section>
+
+    <div class="platform-tabs" role="tablist">
+      <button class="tab-btn active" data-tab="win-guide" type="button">Windows</button>
+      <button class="tab-btn" data-tab="and-guide" type="button">Android</button>
+      <button class="tab-btn" data-tab="usage" type="button">Utilisation</button>
+    </div>
+
+    <div class="tutorial-grid">
+      <section class="platform-panel active tutorial-block" id="panel-win-guide">
+        <h2>Windows — Installation</h2>
+
+        <div class="tutorial-row">
+          <div class="mock">
+            <div class="mock-bar">Étape 1 — Téléchargement</div>
+            <div class="mock-body">
+              <div class="mock-list-item"><strong>Coffre-Setup-Windows.exe</strong><span>36 Mo · Installateur</span></div>
+              <div class="mock-btn"></div>
+            </div>
+          </div>
+          <div class="tutorial-text">
+            <ol>
+              <li><strong>Téléchargez</strong> l’installateur depuis la <a href="index.html">page d’accueil</a>.</li>
+              <li>Double-cliquez le fichier dans Téléchargements.</li>
+              <li>Cliquez <strong>Installer</strong> (pas d’admin requis).</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="tutorial-row">
+          <div class="mock">
+            <div class="mock-bar">Étape 2 — Mot de passe maître</div>
+            <div class="mock-body">
+              <div class="mock-field"></div>
+              <div class="mock-field"></div>
+              <p style="margin:8px 0 0;font-size:0.82rem;color:var(--muted)">Minimum 12 caractères</p>
+              <div class="mock-btn"></div>
+            </div>
+          </div>
+          <div class="tutorial-text">
+            <ol start="4">
+              <li>Au premier lancement, <strong>créez un mot de passe maître</strong>.</li>
+              <li>Confirmez-le. Notez-le dans un endroit sûr.</li>
+              <li>S’il est oublié, les données sont <strong>irrécupérables</strong> (volontaire).</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="tutorial-row">
+          <div class="mock">
+            <div class="mock-bar">Étape 3 — Accueil Coffre</div>
+            <div class="mock-body">
+              <div class="mock-field" style="margin-bottom:12px"></div>
+              <div class="mock-list-item"><strong>Gmail</strong><span>edouard@… · Gmail</span></div>
+              <div class="mock-list-item"><strong>Steam</strong><span>monpseudo · Steam</span></div>
+              <div class="mock-list-item"><strong>Discord</strong><span>user@… · Discord</span></div>
+            </div>
+          </div>
+          <div class="tutorial-text">
+            <ol start="7">
+              <li>La liste affiche vos comptes <strong>triés par ordre alphabétique</strong>.</li>
+              <li>Utilisez la barre de recherche pour filtrer.</li>
+              <li>Touchez <strong>+ Ajouter</strong> pour créer une entrée (titre, identifiant, mot de passe, site).</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="platform-panel tutorial-block" id="panel-and-guide">
+        <h2>Android — Installation</h2>
+
+        <div class="tutorial-row">
+          <div class="mock">
+            <div class="mock-bar">Étape 1 — Installer l’APK</div>
+            <div class="mock-body">
+              <div class="mock-list-item"><strong>Coffre.apk</strong><span>Ouvrir avec le gestionnaire de fichiers</span></div>
+              <div class="mock-btn"></div>
+            </div>
+          </div>
+          <div class="tutorial-text">
+            <ol>
+              <li>Téléchargez <strong>Coffre.apk</strong> sur le téléphone.</li>
+              <li>Ouvrez-le et autorisez l’installation si Android le demande.</li>
+              <li>Créez le mot de passe maître (12 caractères min.).</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="tutorial-row">
+          <div class="mock">
+            <div class="mock-bar">Étape 2 — Remplissage automatique</div>
+            <div class="mock-body">
+              <div class="mock-list-item"><strong>Activer le remplissage automatique</strong><span>Paramètres Coffre</span></div>
+              <div class="mock-list-item" style="background:var(--teal-soft)"><strong>Service : Coffre</strong><span>Sélectionné</span></div>
+            </div>
+          </div>
+          <div class="tutorial-text">
+            <ol start="4">
+              <li>Ouvrez <strong>Paramètres</strong> dans Coffre.</li>
+              <li>Activez le remplissage automatique.</li>
+              <li>Dans les réglages Android, choisissez <strong>Coffre</strong> comme service de saisie.</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="tutorial-row">
+          <div class="mock">
+            <div class="mock-bar">Étape 3 — Connexion dans une app</div>
+            <div class="mock-body">
+              <div class="mock-field"></div>
+              <div class="mock-list-item" style="border-color:var(--teal)"><strong>Suggestion Coffre</strong><span>moncompte@gmail.com</span></div>
+            </div>
+          </div>
+          <div class="tutorial-text">
+            <ol start="7">
+              <li>Ouvrez Chrome ou une application.</li>
+              <li>Touchez le champ identifiant : une <strong>suggestion Coffre</strong> apparaît.</li>
+              <li>Un tap remplit identifiant et mot de passe (coffre déverrouillé).</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="platform-panel tutorial-block" id="panel-usage">
+        <h2>Utilisation au quotidien</h2>
+
+        <div class="card">
+          <h2>Copier identifiant + mot de passe</h2>
+          <ul>
+            <li><strong>Windows</strong> : touchez une ligne → <strong>Utiliser</strong>. L’identifiant est copié, puis le mot de passe après votre Ctrl+V.</li>
+            <li><strong>Windows accès rapide</strong> : <kbd>Ctrl+Shift+Espace</kbd> dans n’importe quelle app (Coffre déverrouillé).</li>
+            <li><strong>Android</strong> : icône éclair → recherche → Utiliser, ou suggestion clavier.</li>
+            <li>Le presse-papier s’efface automatiquement après ~30 secondes.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h2>Navigateur (Windows)</h2>
+          <ul>
+            <li>Installez l’extension Coffre (dossier <code>extension/</code> du dépôt).</li>
+            <li>Coffre ouvert et déverrouillé.</li>
+            <li>Cliquez un champ e-mail : menu <strong>Comptes Coffre</strong> (liste triée A→Z).</li>
+            <li>Paramètres Coffre → Désactiver Google Password Manager si les deux se chevauchent.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h2>Mises à jour</h2>
+          <ul>
+            <li>Coffre vérifie GitHub à l’ouverture.</li>
+            <li>Un bandeau propose d’installer la nouvelle version.</li>
+            <li>Installez par-dessus : le coffre chiffré n’est pas touché.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h2>Aide dans l’application</h2>
+          <p>Le bouton <strong>?</strong> en haut de l’accueil ouvre ce même guide intégré. Vous y retrouvez les étapes d’installation et d’utilisation pour votre plateforme.</p>
+        </div>
+      </section>
+    </div>
+
+    <p class="foot"><a href="index.html">← Retour aux téléchargements</a></p>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll(".tab-btn");
+    const panels = document.querySelectorAll("#panel-win-guide, #panel-and-guide, #panel-usage");
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((t) => t.classList.remove("active"));
+        panels.forEach((p) => p.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById("panel-" + tab.dataset.tab).classList.add("active");
+      });
+    });
+  </script>
+</body>
+</html>
