@@ -29,9 +29,11 @@ if not exist %ISCC% (
   echo winget install JRSoftware.InnoSetup
   exit /b 1
 )
-%ISCC% "%ROOT%\installer\windows\coffre.iss"
-if errorlevel 1 exit /b 1
+REM Compiler d'abord le wipe pour l'embarquer dans l'installateur principal
 %ISCC% "%ROOT%\installer\windows\coffre_wipe.iss"
+if errorlevel 1 exit /b 1
+copy /Y "%ROOT%\installer\windows\Output\Coffre-Supprimer-Tout.exe" "%ROOT%\installer\payload\Coffre-Supprimer-Tout.exe" >nul
+%ISCC% "%ROOT%\installer\windows\coffre.iss"
 if errorlevel 1 exit /b 1
 
 echo === Build APK Android ===

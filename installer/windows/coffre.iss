@@ -1,6 +1,6 @@
 ; Coffre — installateur Windows par utilisateur (pas d'admin)
 #define MyAppName "Coffre"
-#define MyAppVersion "1.0.3"
+#define MyAppVersion "1.0.5"
 #define MyAppPublisher "Coffre"
 #define MyAppURL "https://github.com/galaxie44/coffre"
 #define MyAppExeName "coffre.exe"
@@ -42,6 +42,7 @@ Source: "{#DistDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs cr
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\Coffre.ico"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\Coffre.ico"; Tasks: desktopicon
+Name: "{autoprograms}\Coffre — Tout supprimer"; Filename: "{app}\Coffre-Supprimer-Tout.exe"; IconFilename: "{app}\Coffre.ico"
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "Lancer Coffre"; Flags: nowait postinstall

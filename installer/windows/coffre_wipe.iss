@@ -2,7 +2,7 @@
 ; Ne laisse pas de désinstalleur : l’exécutable fait le ménage puis se termine.
 
 #define MyAppName "Coffre — tout supprimer"
-#define MyAppVersion "1.0.3"
+#define MyAppVersion "1.0.5"
 #define MyAppPublisher "Coffre"
 #define MyAppURL "https://github.com/galaxie44/coffre"
 #define UninstallReg "Software\Microsoft\Windows\CurrentVersion\Uninstall\{8F3C2A91-6B47-4E1D-9C08-C0FF5E11A2B4}_is1"
