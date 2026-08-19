@@ -40,6 +40,12 @@ class AppUpdateService {
   static String get platformAsset =>
       Platform.isAndroid ? androidAsset : windowsAsset;
 
+  static final _releasesUri = Uri.https(
+    'api.github.com',
+    '/repos/$owner/$repo/releases',
+    {'per_page': '30'},
+  );
+
   static final _latestUri = Uri.https(
     'api.github.com',
     '/repos/$owner/$repo/releases/latest',
@@ -78,20 +84,30 @@ class AppUpdateService {
 
   Future<AppUpdateInfo?> _fetchFromApi() async {
     final current = await installedVersion();
+    final headers = {
+      'Accept': 'application/vnd.github+json',
+      'User-Agent': 'Coffre/$current',
+      'X-GitHub-Api-Version': '2022-11-28',
+    };
     final response = await _client
-        .get(
-          _latestUri,
-          headers: {
-            'Accept': 'application/vnd.github+json',
-            'User-Agent': 'Coffre/$current',
-            'X-GitHub-Api-Version': '2022-11-28',
-          },
-        )
+        .get(_releasesUri, headers: headers)
         .timeout(const Duration(seconds: 12));
     if (response.statusCode != 200) {
       throw HttpException('GitHub ${response.statusCode}');
     }
-    return parseLatest(response.body, assetName: platformAsset);
+    final decoded = jsonDecode(response.body);
+    if (decoded is List) {
+      for (final release in decoded) {
+        if (release is! Map) continue;
+        final info = parseRelease(release, assetName: platformAsset);
+        if (info != null) return info;
+      }
+      return null;
+    }
+    if (decoded is Map) {
+      return parseRelease(decoded, assetName: platformAsset);
+    }
+    return null;
   }
 
   Future<AppUpdateInfo?> _fetchFromRedirect() async {
@@ -130,7 +146,14 @@ class AppUpdateService {
     String assetName = windowsAsset,
   }) {
     final json = jsonDecode(body);
-    if (json is! Map) return null;
+    if (json is Map) return parseRelease(json, assetName: assetName);
+    return null;
+  }
+
+  static AppUpdateInfo? parseRelease(
+    Map<dynamic, dynamic> json, {
+    String assetName = windowsAsset,
+  }) {
     final tag = json['tag_name'] as String?;
     if (tag == null || tag.isEmpty) return null;
     if (json['draft'] == true) return null;

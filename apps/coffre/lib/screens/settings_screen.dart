@@ -103,6 +103,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           );
         case UpdateCheckResult.available:
+          if (updates.downloading) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Téléchargement de la version ${updates.info?.version ?? ''}…',
+                ),
+              ),
+            );
+          } else if (updates.info != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Mise à jour ${updates.info!.version} — ${Platform.isWindows ? 'installation en cours' : 'touchez le bandeau vert en haut'}',
+                ),
+              ),
+            );
+          }
         case UpdateCheckResult.busy:
           break;
       }

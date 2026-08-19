@@ -1,6 +1,6 @@
 ; Coffre — installateur Windows par utilisateur (pas d'admin)
 #define MyAppName "Coffre"
-#define MyAppVersion "1.0.8"
+#define MyAppVersion "1.0.9"
 #define MyAppPublisher "Coffre"
 #define MyAppURL "https://github.com/galaxie44/coffre"
 #define MyAppExeName "coffre.exe"

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../services/app_update_service.dart';
 import '../theme/app_theme.dart';
@@ -41,7 +42,9 @@ class AppUpdateController extends ChangeNotifier {
       }
       info = latest;
       notifyListeners();
-      await install();
+      if (Platform.isWindows) {
+        await install();
+      }
       return UpdateCheckResult.available;
     } catch (_) {
       if (!silent) {
@@ -73,6 +76,15 @@ class AppUpdateController extends ChangeNotifier {
       downloading = false;
       notifyListeners();
       if (Platform.isWindows) await onQuit();
+    } on PlatformException catch (e) {
+      downloading = false;
+      if (e.code == 'permission') {
+        error = e.message ??
+            'Autorisez Coffre à installer des applications, puis touchez pour réessayer.';
+      } else {
+        error = e.message ?? 'Installation impossible. Touchez pour réessayer.';
+      }
+      notifyListeners();
     } catch (_) {
       downloading = false;
       error = 'Téléchargement impossible. Touchez pour réessayer.';
@@ -98,7 +110,9 @@ class AppUpdateBanner extends StatelessWidget {
         final label = err ??
             (downloading
                 ? 'Téléchargement de ${info?.version ?? 'la mise à jour'}…'
-                : 'Mise à jour ${info?.headline ?? ''} — installation automatique');
+                : Platform.isAndroid
+                    ? 'Mise à jour ${info?.headline ?? ''} — touchez pour installer'
+                    : 'Mise à jour ${info?.headline ?? ''} — installation automatique');
         return Material(
           color: err != null ? AppTheme.danger : AppTheme.teal,
           child: SafeArea(

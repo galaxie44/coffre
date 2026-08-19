@@ -1,7 +1,7 @@
 name: coffre
 description: Gestionnaire de mots de passe local chiffré (Windows, Android, macOS, Linux).
 publish_to: "none"
-version: 1.0.8+9
+version: 1.0.9+10
 
 environment:
   sdk: ^3.12.2

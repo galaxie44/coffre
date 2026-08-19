@@ -136,7 +136,7 @@ a { color: var(--teal-dark); }
 
 .platform-tabs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 8px;
   margin-bottom: 16px;
 }
@@ -360,6 +360,60 @@ a { color: var(--teal-dark); }
 }
 
 .tutorial-text li strong { color: var(--ink); }
+
+.download-btn.disabled {
+  pointer-events: none;
+  opacity: 0.55;
+  background: #9aabb3;
+}
+
+.arch-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 10px;
+}
+
+.arch-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.arch-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.arch-date {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.arch-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.arch-link {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--teal-soft);
+  color: var(--teal-dark);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.arch-muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
 
 @media (max-width: 760px) {
   .platform-tabs { grid-template-columns: 1fr 1fr; }
