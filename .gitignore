@@ -33,6 +33,7 @@ Desktop.ini
 **/upload-keystore.jks
 **/key.properties
 .android-signing-local.txt
+.android-keystore.b64
 .android-keystore-oneline.b64
 .env
 .env.*
