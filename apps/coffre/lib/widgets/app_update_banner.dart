@@ -111,7 +111,7 @@ class AppUpdateBanner extends StatelessWidget {
             (downloading
                 ? 'Téléchargement de ${info?.version ?? 'la mise à jour'}…'
                 : Platform.isAndroid
-                    ? 'Mise à jour ${info?.headline ?? ''} — touchez pour installer'
+                    ? 'Mise à jour ${info?.headline ?? ''} — touchez pour installer. En cas de conflit de signature, désinstallez Coffre puis réinstallez.'
                     : 'Mise à jour ${info?.headline ?? ''} — installation automatique');
         return Material(
           color: err != null ? AppTheme.danger : AppTheme.teal,

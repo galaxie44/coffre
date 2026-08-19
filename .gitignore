@@ -30,6 +30,10 @@ Desktop.ini
 **/*.pem
 **/*.keystore
 **/*.jks
+**/upload-keystore.jks
+**/key.properties
+.android-signing-local.txt
+.android-keystore.b64
 .env
 .env.*
 

@@ -1,0 +1,4 @@
+storePassword=REMPLACER
+keyPassword=REMPLACER
+keyAlias=coffre
+storeFile=upload-keystore.jks

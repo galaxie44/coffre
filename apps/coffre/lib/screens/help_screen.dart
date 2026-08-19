@@ -160,8 +160,9 @@ class HelpScreen extends StatelessWidget {
           ],
           const _HelpSection(
             title: 'Mises à jour',
-            body:
-                'Coffre vérifie GitHub à l’ouverture et propose d’installer la nouvelle version. Installez par-dessus : le coffre chiffré n’est pas modifié.',
+            body: Platform.isAndroid
+                ? 'Paramètres → Rechercher les mises à jour. À partir de la 1.0.10, les APK sont signés de façon stable. Si Android affiche un conflit de package, désinstallez Coffre une fois puis réinstallez depuis le site (vos données locales seront effacées).'
+                : 'Coffre vérifie GitHub à l’ouverture et propose d’installer la nouvelle version. Installez par-dessus : le coffre chiffré n’est pas modifié.',
           ),
           if (Platform.isWindows) ...[
             const _HelpSection(
