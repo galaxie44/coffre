@@ -86,7 +86,7 @@ class WindowsDesktopService with TrayListener, WindowListener {
     }
     await updateTrayTooltip(bridgeActive: false);
     await trayManager.setContextMenu(Menu(items: [
-      MenuItem(key: 'quickpick', label: 'Accès rapide (Ctrl+Shift+C)'),
+      MenuItem(key: 'quickpick', label: 'Accès rapide (Ctrl+Shift+Espace)'),
       MenuItem.separator(),
       MenuItem(key: 'show', label: 'Ouvrir Coffre'),
       MenuItem(key: 'lock', label: 'Verrouiller'),

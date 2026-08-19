@@ -1,8 +1,8 @@
 ; Coffre — suppression complète (programme + coffre + traces Windows)
-; Ne laisse pas de désinstalleur : l’exécutable fait le ménage puis se termine.
+; Ne laisse pas de désinstalleur : l'exécutable fait le ménage puis se termine.
 
 #define MyAppName "Coffre — tout supprimer"
-#define MyAppVersion "1.0.5"
+#define MyAppVersion "1.0.6"
 #define MyAppPublisher "Coffre"
 #define MyAppURL "https://github.com/galaxie44/coffre"
 #define UninstallReg "Software\Microsoft\Windows\CurrentVersion\Uninstall\{8F3C2A91-6B47-4E1D-9C08-C0FF5E11A2B4}_is1"
@@ -38,10 +38,10 @@ Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 [Messages]
 SetupWindowTitle=Coffre — tout supprimer
 WelcomeLabel1=Tout supprimer
-WelcomeLabel2=Ce programme ferme Coffre, le désinstalle, puis détruit le coffre local (mots de passe, préférences, traces Windows).%n%nCette action est IRRÉVERSIBLE. Sur Android, désinstallez simplement l’application depuis les paramètres du téléphone.
+WelcomeLabel2=Ce programme ferme Coffre, le désinstalle, puis détruit le coffre local (mots de passe, préférences, traces Windows) et supprime tous les fichiers Coffre du Bureau et des Téléchargements.%n%nCette action est IRRÉVERSIBLE. Sur Android, désinstallez simplement l'application depuis les paramètres du téléphone.
 ButtonInstall=Tout supprimer
 FinishedHeadingLabel=Coffre a été retiré
-FinishedLabel=Coffre, le coffre chiffré et les raccourcis ont été supprimés de cet ordinateur.
+FinishedLabel=Coffre, le coffre chiffré, les raccourcis et tous les fichiers associés ont été supprimés de cet ordinateur.
 
 [Code]
 var
@@ -53,7 +53,7 @@ begin
     wpWelcome,
     'Confirmation',
     'Tous les mots de passe de Coffre seront perdus.',
-    'Cochez la case ci-dessous pour continuer. Aucune récupération n’est possible.',
+    'Cochez la case ci-dessous pour continuer. Aucune récupération n''est possible.',
     False,
     False
   );
@@ -82,10 +82,10 @@ var
   ResultCode: Integer;
 begin
   Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM coffre.exe /T', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Sleep(1200);
+  Sleep(1500);
 end;
 
-procedure DeleteShortcut(const FileName: String);
+procedure DeleteIfExists(const FileName: String);
 begin
   if FileExists(FileName) then
     DeleteFile(FileName);
@@ -103,39 +103,117 @@ begin
     DeleteCoffreDir(Dir);
 end;
 
+procedure DeleteCoffreFilesInFolder(const Folder: String);
+begin
+  { Installateurs }
+  DeleteIfExists(Folder + '\Coffre-Setup-Windows.exe');
+  DeleteIfExists(Folder + '\Coffre-Setup-Windows (1).exe');
+  DeleteIfExists(Folder + '\Coffre-Setup-Windows (2).exe');
+  DeleteIfExists(Folder + '\Coffre-Setup-Windows (3).exe');
+  DeleteIfExists(Folder + '\Coffre-Supprimer-Tout.exe');
+  DeleteIfExists(Folder + '\Coffre-Supprimer-Tout (1).exe');
+  { APK }
+  DeleteIfExists(Folder + '\Coffre.apk');
+  DeleteIfExists(Folder + '\Coffre (1).apk');
+  { Scripts et docs }
+  DeleteIfExists(Folder + '\Installer Coffre.bat');
+  DeleteIfExists(Folder + '\Installer Coffre (Admin).bat');
+  DeleteIfExists(Folder + '\Coffre-LIREMOI.txt');
+  DeleteIfExists(Folder + '\Coffre-logo.png');
+  DeleteIfExists(Folder + '\coffre-logo.png');
+end;
+
+procedure UnpinFromTaskbar;
+var
+  TaskBarDir: String;
+  FindRec: TFindRec;
+begin
+  TaskBarDir := ExpandConstant('{userappdata}\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar');
+  if FindFirst(TaskBarDir + '\Coffre*.lnk', FindRec) then
+  begin
+    try
+      repeat
+        DeleteFile(TaskBarDir + '\' + FindRec.Name);
+      until not FindNext(FindRec);
+    finally
+      FindClose(FindRec);
+    end;
+  end;
+  { Windows 10+ peut aussi stocker dans ImplicitAppShortcuts }
+  TaskBarDir := ExpandConstant('{userappdata}\Microsoft\Internet Explorer\Quick Launch\User Pinned\ImplicitAppShortcuts');
+  if DirExists(TaskBarDir) then
+  begin
+    if FindFirst(TaskBarDir + '\*', FindRec) then
+    begin
+      try
+        repeat
+          if (FindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0 then
+          begin
+            if FileExists(TaskBarDir + '\' + FindRec.Name + '\Coffre.lnk') then
+              DelTree(TaskBarDir + '\' + FindRec.Name, True, True, True);
+          end;
+        until not FindNext(FindRec);
+      finally
+        FindClose(FindRec);
+      end;
+    end;
+  end;
+end;
+
 procedure RemoveCoffreTraces;
 var
   ResultCode: Integer;
   Unins: String;
+  Desktop: String;
+  Downloads: String;
+  UserProfile: String;
 begin
   KillCoffre;
 
+  { Désinstalleur Inno Setup }
   Unins := ExpandConstant('{localappdata}\Programs\Coffre\unins000.exe');
   if FileExists(Unins) then
     Exec(Unins, '/VERYSILENT /NORESTART /SUPPRESSMSGBOXES', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
 
   KillCoffre;
 
+  { Dossiers programme et données }
   DeleteCoffreDir(ExpandConstant('{localappdata}\Programs\Coffre'));
   DeleteCoffreDir(ExpandConstant('{userappdata}\Coffre'));
   DeleteCoffreDir(ExpandConstant('{userappdata}\com.coffre'));
   DeleteCoffreDir(ExpandConstant('{localappdata}\com.coffre'));
   DeleteCoffreDir(ExpandConstant('{localappdata}\Coffre'));
-  DeleteIfContainsExe(ExpandConstant('{userdesktop}\Coffre'));
 
-  DeleteShortcut(ExpandConstant('{userdesktop}\Coffre.lnk'));
-  DeleteShortcut(ExpandConstant('{commondesktop}\Coffre.lnk'));
-  DeleteShortcut(ExpandConstant('{userprograms}\Coffre.lnk'));
-  DeleteShortcut(ExpandConstant('{commonprograms}\Coffre.lnk'));
+  { Raccourcis }
+  DeleteIfExists(ExpandConstant('{userdesktop}\Coffre.lnk'));
+  DeleteIfExists(ExpandConstant('{commondesktop}\Coffre.lnk'));
+  DeleteIfExists(ExpandConstant('{userprograms}\Coffre.lnk'));
+  DeleteIfExists(ExpandConstant('{commonprograms}\Coffre.lnk'));
   DeleteCoffreDir(ExpandConstant('{userprograms}\Coffre'));
-  DeleteShortcut(ExpandConstant('{userstartup}\Coffre.lnk'));
-  DeleteShortcut(ExpandConstant('{commonstartup}\Coffre.lnk'));
+  DeleteIfExists(ExpandConstant('{userstartup}\Coffre.lnk'));
+  DeleteIfExists(ExpandConstant('{commonstartup}\Coffre.lnk'));
 
-  if FileExists(ExpandConstant('{tmp}\Coffre.apk')) then
-    DeleteFile(ExpandConstant('{tmp}\Coffre.apk'));
-  if FileExists(ExpandConstant('{tmp}\Coffre-Setup-Windows.exe')) then
-    DeleteFile(ExpandConstant('{tmp}\Coffre-Setup-Windows.exe'));
+  { Désépingler de la barre des tâches }
+  UnpinFromTaskbar;
 
+  { Bureau — fichiers Coffre en vrac }
+  Desktop := ExpandConstant('{userdesktop}');
+  DeleteCoffreFilesInFolder(Desktop);
+  DeleteIfContainsExe(Desktop + '\Coffre');
+
+  { Téléchargements — fichiers Coffre }
+  UserProfile := GetEnv('USERPROFILE');
+  Downloads := UserProfile + '\Downloads';
+  DeleteCoffreFilesInFolder(Downloads);
+  { Aussi vérifier le dossier Téléchargements localisé }
+  Downloads := UserProfile + '\Téléchargements';
+  DeleteCoffreFilesInFolder(Downloads);
+
+  { Temp }
+  DeleteIfExists(ExpandConstant('{tmp}\Coffre.apk'));
+  DeleteIfExists(ExpandConstant('{tmp}\Coffre-Setup-Windows.exe'));
+
+  { Registre }
   RegDeleteValue(HKEY_CURRENT_USER, 'Software\Microsoft\Windows\CurrentVersion\Run', 'Coffre');
   RegDeleteKeyIncludingSubkeys(HKEY_CURRENT_USER, '{#UninstallReg}');
   RegDeleteKeyIncludingSubkeys(HKEY_CURRENT_USER, 'Software\Google\Chrome\NativeMessagingHosts\com.coffre.bridge');

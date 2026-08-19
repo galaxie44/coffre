@@ -38,7 +38,7 @@ class ForegroundWindowInfo {
 class ForegroundWindow {
   static final _processCache = <int, String>{};
 
-  /// Rapide : hwnd + titre seulement (hotkey Ctrl+Shift+C).
+  /// Rapide : hwnd + titre seulement (hotkey Ctrl+Shift+Espace).
   static ForegroundWindowInfo captureQuick() {
     if (!Platform.isWindows) return ForegroundWindowInfo.empty;
     final hwnd = GetForegroundWindow();

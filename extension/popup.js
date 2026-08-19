@@ -22,6 +22,15 @@ function domainMatches(pageDomain, entryDomain) {
   return page === entry || page.endsWith("." + entry);
 }
 
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("timeout")), ms)
+    ),
+  ]);
+}
+
 async function main() {
   const status = document.getElementById("status");
   const list = document.getElementById("list");
@@ -30,52 +39,61 @@ async function main() {
   status.textContent = domain ? `Domaine : ${domain}` : "Aucun domaine";
 
   if (!domain || !tab?.id) {
-    status.textContent = "Onglet non compatible (page système ou sans domaine).";
+    status.textContent = "Onglet non compatible (page systeme ou sans domaine).";
     return;
   }
 
-  const response = await chrome.runtime.sendMessage({
-    type: "getCredentials",
-    domain,
-  });
+  let response;
+  try {
+    response = await withTimeout(
+      chrome.runtime.sendMessage({ type: "getCredentials", domain }),
+      8000
+    );
+  } catch (e) {
+    if (e.message === "timeout") {
+      status.textContent =
+        "Coffre ne repond pas. Verifiez qu'il est ouvert et deverrouille.";
+      return;
+    }
+    throw e;
+  }
 
   if (response?.error) {
     const detail = response.message || response.error;
     status.textContent =
       detail === "bridge_missing"
-        ? "Coffre fermé ou verrouillé — ouvrez et déverrouillez l’app."
+        ? "Coffre ferme ou verrouille - ouvrez et deverrouillez l'app."
         : `Bridge indisponible : ${detail}`;
     return;
   }
   if (response?.error === "locked" || response?.locked) {
-    status.textContent = "Coffre verrouillé — déverrouillez l'application.";
+    status.textContent = "Coffre verrouille - deverrouillez l'application.";
     return;
   }
 
   const entries = response?.entries || [];
   if (!entries.length) {
-    status.textContent = "Aucune entrée pour ce site.";
+    status.textContent = "Aucune entree pour ce site.";
     return;
   }
 
-  status.textContent = `${entries.length} entrée(s)`;
+  status.textContent = `${entries.length} entree(s)`;
   for (const entry of entries) {
     const li = document.createElement("li");
     const btn = document.createElement("button");
     btn.innerHTML = `<div class="title">${escapeHtml(entry.title || "Sans titre")}</div>
       <div class="sub">${escapeHtml(entry.username || "")}</div>`;
     btn.addEventListener("click", async () => {
-      // Re-validate active tab URL to avoid filling after navigation (race).
       const latest = await currentTab();
       const latestDomain = domainFromUrl(latest?.url || "");
       if (!latest?.id || latest.id !== tab.id || latestDomain !== domain) {
         status.textContent =
-          "L'onglet a changé. Rouvrez le popup pour remplir en sécurité.";
+          "L'onglet a change. Rouvrez le popup pour remplir en securite.";
         return;
       }
       const entryDomain = domainFromUrl(entry.url || "") || entry.domain || "";
       if (entryDomain && !domainMatches(latestDomain, entryDomain)) {
-        status.textContent = "Domaine incompatible — remplissage annulé.";
+        status.textContent = "Domaine incompatible - remplissage annule.";
         return;
       }
       await chrome.tabs.sendMessage(latest.id, {

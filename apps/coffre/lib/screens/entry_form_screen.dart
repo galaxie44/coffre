@@ -314,7 +314,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Application Windows (optionnel)',
                   hintText: 'steam.exe',
-                  helperText: 'Pour l’accès rapide Ctrl+Shift+C dans cette app.',
+                  helperText: 'Pour l’accès rapide Ctrl+Shift+Espace dans cette app.',
                 ),
               ),
               const SizedBox(height: 12),

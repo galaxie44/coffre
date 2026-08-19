@@ -296,7 +296,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ListTile(
               leading: const Icon(Icons.flash_on_outlined),
               title: const Text('Accès rapide Windows'),
-              subtitle: const Text('Ctrl+Shift+C dans n’importe quelle app (Steam, etc.)'),
+              subtitle: const Text('Ctrl+Shift+Espace dans n’importe quelle app (Steam, etc.)'),
             ),
             SwitchListTile(
               secondary: const Icon(Icons.content_paste_go),

@@ -18,6 +18,15 @@ let lastCoffreFill = null;
 let saveBar = null;
 let saveOfferOpen = false;
 
+function sendWithTimeout(msg, ms = 8000) {
+  return Promise.race([
+    chrome.runtime.sendMessage(msg),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("timeout")), ms)
+    ),
+  ]);
+}
+
 function pageDomain() {
   try {
     return location.hostname.replace(/^www\./, "").toLowerCase();
@@ -315,7 +324,7 @@ function parseBridgeError(response) {
 
 async function preloadCache() {
   try {
-    const r = await chrome.runtime.sendMessage({ type: "getAllEntries" });
+    const r = await sendWithTimeout({ type: "getAllEntries" });
     if (r && r.entries) {
       cachedAll = r.entries;
       cacheAt = Date.now();
@@ -334,14 +343,14 @@ async function loadEntries(kind) {
       if (cachedAll && Date.now() - cacheAt < 45000) {
         response = { entries: cachedAll };
       } else {
-        response = await chrome.runtime.sendMessage({ type: "getAllEntries" });
+        response = await sendWithTimeout({ type: "getAllEntries" });
         if (response?.entries) {
           cachedAll = response.entries;
           cacheAt = Date.now();
         }
       }
     } else {
-      response = await chrome.runtime.sendMessage({
+      response = await sendWithTimeout({
         type: "getCredentials",
         domain: pageDomain(),
       });
@@ -695,7 +704,7 @@ function showSaveBar({ username, password, kind }) {
     save.disabled = true;
     save.textContent = "…";
     try {
-      const response = await chrome.runtime.sendMessage({
+      const response = await sendWithTimeout({
         type: "saveCredential",
         username,
         password,

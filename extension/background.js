@@ -18,22 +18,30 @@ async function fetchAllViaNative() {
 }
 
 async function fetchNative(payload) {
-  return new Promise((resolve) => {
-    try {
-      chrome.runtime.sendNativeMessage(NATIVE_HOST, payload, (response) => {
-        if (chrome.runtime.lastError) {
-          resolve({
-            error: "native_messaging",
-            message: chrome.runtime.lastError.message,
-          });
-          return;
-        }
-        resolve(response || { error: "empty" });
-      });
-    } catch (e) {
-      resolve({ error: String(e) });
-    }
-  });
+  return Promise.race([
+    new Promise((resolve) => {
+      try {
+        chrome.runtime.sendNativeMessage(NATIVE_HOST, payload, (response) => {
+          if (chrome.runtime.lastError) {
+            resolve({
+              error: "native_messaging",
+              message: chrome.runtime.lastError.message,
+            });
+            return;
+          }
+          resolve(response || { error: "empty" });
+        });
+      } catch (e) {
+        resolve({ error: String(e) });
+      }
+    }),
+    new Promise((resolve) =>
+      setTimeout(
+        () => resolve({ error: "timeout", message: "Coffre ne repond pas (timeout)." }),
+        6000
+      )
+    ),
+  ]);
 }
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {

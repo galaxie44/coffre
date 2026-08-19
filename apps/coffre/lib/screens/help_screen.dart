@@ -33,13 +33,13 @@ class HelpScreen extends StatelessWidget {
             const _HelpSection(
               title: 'Apps Windows (Steam, Discord…)',
               body:
-                  'Gardez Coffre déverrouillé. Ctrl+Shift+C : touchez une ligne — l’identifiant est copié, puis le mot de passe arrive dans le presse-papier après votre Ctrl+V. Effacement auto après 30 s. Renseignez « steam.exe » sur l’entrée Steam pour la voir en premier.',
+                  'Gardez Coffre déverrouillé. Ctrl+Shift+Espace : touchez une ligne — l’identifiant est copié, puis le mot de passe arrive dans le presse-papier après votre Ctrl+V. Effacement auto après 30 s. Renseignez « steam.exe » sur l’entrée Steam pour la voir en premier.',
             ),
           if (Platform.isAndroid) ...[
             const _HelpSection(
               title: 'Remplir un login (clavier)',
               body:
-                  'C’est l’équivalent de Ctrl+Shift+C sur téléphone. Paramètres Coffre → Activer le remplissage automatique → choisissez Coffre. Ouvrez Chrome ou une app, touchez le champ identifiant : une suggestion Coffre apparaît au-dessus du clavier. Un tap remplit identifiant et mot de passe. Le coffre doit être déverrouillé ; il reste ouvert le temps du verrouillage automatique (Paramètres).',
+                  'C’est l’équivalent de Ctrl+Shift+Espace sur téléphone. Paramètres Coffre → Activer le remplissage automatique → choisissez Coffre. Ouvrez Chrome ou une app, touchez le champ identifiant : une suggestion Coffre apparaît au-dessus du clavier. Un tap remplit identifiant et mot de passe. Le coffre doit être déverrouillé ; il reste ouvert le temps du verrouillage automatique (Paramètres).',
             ),
             const _HelpSection(
               title: 'Enregistrer un nouveau compte',

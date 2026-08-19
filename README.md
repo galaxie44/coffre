@@ -35,7 +35,7 @@ Toutes les versions : [Releases](https://github.com/galaxie44/coffre/releases).
 
 - **Liste** : recherchez un compte, touchez une ligne pour l’ouvrir, **Utiliser** pour copier l’identifiant puis le mot de passe.
 - **Ajouter** : titre, identifiant, mot de passe, domaine du site (ex. `github.com`).
-- **Windows — accès rapide** : `Ctrl+Shift+C` dans n’importe quelle app. Coffre doit rester déverrouillé.
+- **Windows — accès rapide** : `Ctrl+Shift+Espace` dans n’importe quelle app. Coffre doit rester déverrouillé.
 - **Android — clavier** : touchez un champ de connexion ; une suggestion Coffre apparaît au-dessus du clavier.
 - **Nouveaux comptes** : si vous créez un identifiant / mot de passe que Coffre ne connaît pas encore, l’app propose de l’enregistrer (ou de le mettre à jour).
 - **2FA** : collez le secret TOTP (Base32) dans une entrée pour générer le code à 6 chiffres.

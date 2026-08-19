@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Coffre",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Remplissage automatique des formulaires via l'application Coffre (locale).",
   "permissions": [
     "activeTab",

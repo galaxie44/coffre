@@ -66,7 +66,7 @@ Endpoints : `/credentials?domain=` (par site), `/entries` (toutes les entrées p
 
 ## Accès rapide Windows
 
-Raccourci `Ctrl+Shift+C` : overlay always-on-top, matching `windowsProcess` / `windowsTitleHint`.
+Raccourci `Ctrl+Shift+Espace` : overlay always-on-top, matching `windowsProcess` / `windowsTitleHint`.
 Collage clavier opt-in via Paramètres. Tout processus utilisateur peut lire le bridge pendant la session.
 
 ## Wipe (zone danger)

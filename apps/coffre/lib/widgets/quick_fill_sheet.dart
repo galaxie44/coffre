@@ -8,7 +8,7 @@ import '../utils/entry_display.dart';
 import '../utils/entry_groups.dart';
 import 'entry_group_card.dart';
 
-/// Équivalent tactile de Ctrl+Shift+C : feuille du bas, au-dessus du clavier.
+/// Équivalent tactile de Ctrl+Shift+Espace : feuille du bas, au-dessus du clavier.
 Future<void> showQuickFillSheet({
   required BuildContext context,
   required VaultService vault,

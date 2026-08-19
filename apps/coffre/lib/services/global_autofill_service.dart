@@ -51,8 +51,8 @@ class GlobalAutofillService {
 
     final ctrl = (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
     final shift = (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
-    final c = (GetAsyncKeyState(0x43) & 0x8000) != 0;
-    final down = ctrl && shift && c;
+    final space = (GetAsyncKeyState(VK_SPACE) & 0x8000) != 0;
+    final down = ctrl && shift && space;
 
     if (down && !_comboWasDown) {
       final now = DateTime.now();
